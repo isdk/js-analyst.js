@@ -26,40 +26,42 @@ npm install @isdk/js-analyst
 ### 1. 基础解析
 
 ```typescript
-import { createAnalyzer } from '@isdk/js-analyst';
+import { createAnalyzer, parse, parseAll } from '@isdk/js-analyst';
 
-const analyzer = createAnalyzer();
-const fn = analyzer.parse('export async function* myGen(a: number = 1) {}');
+// 快速解析第一个函数
+const fn = parse('const add = (a, b) => a + b');
+console.log(fn.name); // 'add'
 
-console.log(fn.name);        // 'myGen'
-console.log(fn.isAsync);     // true
-console.log(fn.isGenerator); // true
-console.log(fn.syntax);      // 'declaration'
+// 解析文件中的所有函数
+const code = `
+  function save() {}
+  function load() {}
+`;
+const fns = parseAll(code);
+console.log(fns.length); // 2
+
+// 或者使用自定义分析器实例
+const analyzer = createAnalyzer({ engine: 'oxc' });
+const result = analyzer.parse('export async function* myGen(a: number = 1) {}');
 ```
 
 ### 2. 全函数语义匹配 (Snippet Schema)
 
-这是最强大的验证方式。你可以用一个**模糊的“代码模板”**去验证一个**具体的实现**，引擎会自动忽略无关的命名差异、空格、括号或声明方式。
-
-```typescript
-import { verify } from '@isdk/js-analyst';
-
-// 实际代码：变量名是 a/b，包含 TS 类型，且是箭头函数
-const code = 'const add = (a: number, b: number): number => (a + b)';
-
-// 验证模式：
-// - 使用 args[0], args[1] 忽略实际变量名
-// - 使用 :any 忽略或通配类型限制
-// - 即使模式写的是 function 声明，也能匹配 code 里的箭头函数
-const pattern = 'function _(args[0]: any, args[1]: any) { return args[0] + args[1] }';
-
-const result = verify(code, pattern);
-console.log(result.passed); // ✅ true
-```
+// ... (existing snippet content) ...
 
 ---
 
 ## API 深度参考
+
+### `Analyzer` 配置项
+
+传给 `createAnalyzer(options)` 的参数。
+
+| 选项 | 类型 | 默认值 | 说明 |
+|--------|------|---------|-------------|
+| `engine` | `'auto' \| 'acorn' \| 'oxc'` | `'auto'` | 强制使用特定的解析引擎。 |
+| `threshold` | `number` | `50 * 1024` | 自动模式下切换到 WASM (OXC) 的字节大小阈值。 |
+| `warmup` | `boolean` | `true` | 是否预热 WASM 引擎以加快首次解析速度。 |
 
 ### `FunctionInfo` 对象
 
@@ -67,17 +69,51 @@ console.log(result.passed); // ✅ true
 
 | 属性 | 类型 | 说明 |
 |------|------|------|
-| `name` | `string \| null` | 函数名（匿名函数或赋值给变量的匿名函数会自动处理） |
+| `name` | `string \| null` | 函数名（自动处理变量赋值、类方法等） |
 | `kind` | `string` | 逻辑角色：`function`, `method`, `getter`, `setter`, `constructor` |
 | `syntax` | `string` | 语法形式：`declaration`, `expression`, `arrow` |
-| `isAsync` | `boolean` | 是否带有 `async` 关键字 |
-| `isGenerator` | `boolean` | 是否为生成器函数（带有 `*`） |
-| `isArrow` | `boolean` | 是否为箭头函数 |
+| `isAsync` | `boolean` | 是否为 `async` |
+| `isGenerator` | `boolean` | 是否为生成器函数 `*` |
 | `isStatic` | `boolean` | 是否为类静态成员 |
-| `paramCount` | `number` | 定义的参数数量 |
+| `paramCount` | `number` | 参数数量 |
 | `params` | `ParamInfo[]` | 详细的参数元数据列表 |
 | `returnType` | `string \| null` | TypeScript 返回类型注解的字符串表示 |
 | `body` | `BodyInfo` | 函数体分析工具 |
+| `engine` | `string` | 解析该函数所使用的引擎 (`acorn` \| `oxc`) |
+
+**方法:**
+
+- `param(index: number)`: 按索引获取 `ParamInfo`。
+- `paramByName(name: string)`: 按名称获取 `ParamInfo`。
+- `query(selector: string)`: 在函数作用域内使用 Esquery 查找 AST 节点。
+- `has(selector: string)`: 检查作用域内是否存在匹配的选择器。
+- `toJSON()`: 导出为纯对象。
+
+### `ParamInfo` 对象
+
+| 属性 | 类型 | 说明 |
+|------|------|------|
+| `name` | `string \| null` | 参数名（如果是解构则为 null） |
+| `type` | `string \| null` | TS 类型注解 |
+| `hasDefault` | `boolean` | 是否有默认值 |
+| `isRest` | `boolean` | 是否为剩余参数 (`...args`) |
+| `isDestructured` | `boolean` | 是否使用了对象/数组解构 |
+| `pattern` | `'object' \| 'array' \| null` | 解构的类型 |
+| `text` | `string` | 参数的原始源码文本 |
+
+### `BodyInfo` 对象
+
+| 属性 | 类型 | 说明 |
+|------|------|------|
+| `statements` | `ASTNode[]` | 函数体内的顶级语句列表 |
+| `returns` | `ASTNode[]` | 所有的返回路径节点（作用域感知） |
+| `isBlock` | `boolean` | 是否使用 `{}` 花括号包裹 |
+| `isExpression` | `boolean` | 是否为单表达式体（常见于箭头函数） |
+| `text` | `string` | 函数体内容的原始源码 |
+
+**方法:**
+
+- `query(selector)` / `has(selector)`: 作用域受限的 AST 查询。
 
 ---
 
@@ -114,20 +150,62 @@ analyzer.verify(code, {
 
 ### 3. 返回路径集合验证 (`returns`)
 
-自动分析函数内所有的 `return` 路径（包括提前返回）：
+自动分析函数内所有的 `return` 路径（包括提前返回）。除了使用匹配器，你还可以使用**自定义回调函数**：
 
 ```typescript
 analyzer.verify(code, {
-  returns: {
-    $any: ['args[0]', 'null'], // 必须至少有一个路径返回参数 0 或 null
-    $not: 'undefined'          // 任何路径都不能显式返回 undefined
+  returns: (helper) => {
+    // helper 提供了一系列便捷的判定方法
+    return helper.isCall('fetch') || helper.isBinaryOp('+', '_', '_');
   }
+});
+```
+
+### 4. 自定义逻辑钩子 (`custom`)
+
+利用 API 的完整能力进行深度校验：
+
+```typescript
+analyzer.verify(code, {
+  custom: (fn) => {
+    return fn.paramCount > 0 && fn.body.has('VariableDeclaration');
+  },
+  body: {
+    custom: (body) => body.statementCount < 10
+  }
+});
+```
+
+### 5. 严格模式 (`strict`)
+
+默认情况下，引擎会忽略非语义差异。使用 `strict: true` 进行精确的结构匹配：
+
+```typescript
+analyzer.verify(code, {
+  strict: true,
+  body: 'return a+b' // 在严格模式下，将不会匹配 'return (a+b)'
 });
 ```
 
 ---
 
 ## 语义等价性
+
+// ... (existing semantic content) ...
+
+---
+
+## 工具函数 (Utilities)
+
+库中导出了一些底层的工具函数，方便你手动处理 AST 或源码：
+
+| 函数 | 说明 |
+|----------|-------------|
+| `stripComments(code)` | 移除所有 JS/TS 注释。 |
+| `detectTypeScript(code)` | 根据语法推断代码是否为 TypeScript。 |
+| `offsetToLineColumn(code, offset)` | 将字符偏移量转换为 `{ line, column }`。 |
+| `findInScope(node, test)` | 在尊重函数作用域边界的情况下查找节点。 |
+| `tsTypeToString(typeNode)` | 将 TS 类型节点标准化为字符串表示。 |
 
 验证引擎在匹配时会自动忽略以下非语义差异（除非开启 `strict: true`）：
 

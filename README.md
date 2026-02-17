@@ -26,40 +26,42 @@ npm install @isdk/js-analyst
 ### 1. Basic Analysis
 
 ```typescript
-import { createAnalyzer } from '@isdk/js-analyst';
+import { createAnalyzer, parse, parseAll } from '@isdk/js-analyst';
 
-const analyzer = createAnalyzer();
-const fn = analyzer.parse('export async function* myGen(a: number = 1) {}');
+// Quick parse the first function
+const fn = parse('const add = (a, b) => a + b');
+console.log(fn.name); // 'add'
 
-console.log(fn.name);        // 'myGen'
-console.log(fn.isAsync);     // true
-console.log(fn.isGenerator); // true
-console.log(fn.syntax);      // 'declaration'
+// Parse all functions in a file
+const code = `
+  function save() {}
+  function load() {}
+`;
+const fns = parseAll(code);
+console.log(fns.length); // 2
+
+// Or use a custom analyzer instance
+const analyzer = createAnalyzer({ engine: 'oxc' });
+const result = analyzer.parse('export async function* myGen(a: number = 1) {}');
 ```
 
 ### 2. Semantic Snippet Matching
 
-The most powerful way to verify. Use a **fuzzy "template"** to match a **concrete implementation**. It automatically ignores differences in naming, spacing, and syntax forms (e.g., arrow vs. declaration).
-
-```typescript
-import { verify } from '@isdk/js-analyst';
-
-// Actual code: uses specific names, TS types, and arrow syntax
-const code = 'const add = (a: number, b: number): number => (a + b)';
-
-// Validation pattern:
-// - Uses args[0], args[1] to ignore actual parameter names
-// - Uses :any to wildcard the type constraints
-// - Matches even though it's written as a standard function declaration
-const pattern = 'function _(args[0]: any, args[1]: any) { return args[0] + args[1] }';
-
-const result = verify(code, pattern);
-console.log(result.passed); // ✅ true
-```
+// ... (existing snippet content) ...
 
 ---
 
 ## API Reference
+
+### `Analyzer` Options
+
+Passed to `createAnalyzer(options)`.
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `engine` | `'auto' \| 'acorn' \| 'oxc'` | `'auto'` | Force a specific parser engine. |
+| `threshold` | `number` | `50 * 1024` | Byte size threshold to switch to WASM (OXC) in auto mode. |
+| `warmup` | `boolean` | `true` | Pre-initialize WASM engine for faster first parse. |
 
 ### `FunctionInfo` Object
 
@@ -67,17 +69,51 @@ Returned by `analyzer.parse()`. Provides comprehensive metadata.
 
 | Property | Type | Description |
 |------|------|------|
-| `name` | `string \| null` | Function name (auto-handles anonymous assigned functions) |
-| `kind` | `string` | Role: `function`, `method`, `getter`, `setter`, `constructor` |
-| `syntax` | `string` | Form: `declaration`, `expression`, `arrow` |
-| `isAsync` | `boolean` | Has `async` keyword |
-| `isGenerator` | `boolean` | Has generator `*` |
-| `isArrow` | `boolean` | Is arrow function |
-| `isStatic` | `boolean` | Is static class member |
-| `paramCount` | `number` | Number of defined parameters |
-| `params` | `ParamInfo[]` | List of parameter metadata |
-| `returnType` | `string \| null` | String representation of TS return type |
+| `name` | `string \| null` | Function name (handles assignments & methods) |
+| `kind` | `string` | `function`, `method`, `getter`, `setter`, `constructor` |
+| `syntax` | `string` | `declaration`, `expression`, `arrow` |
+| `isAsync` | `boolean` | `true` if `async` |
+| `isGenerator` | `boolean` | `true` if generator `*` |
+| `isStatic` | `boolean` | `true` if class static member |
+| `paramCount` | `number` | Number of parameters |
+| `params` | `ParamInfo[]` | Detailed parameter metadata |
+| `returnType` | `string \| null` | TS return type annotation string |
 | `body` | `BodyInfo` | Tools for function body analysis |
+| `engine` | `string` | Engine used for this function (`acorn` \| `oxc`) |
+
+**Methods:**
+
+- `param(index: number)`: Get `ParamInfo` by index.
+- `paramByName(name: string)`: Get `ParamInfo` by name.
+- `query(selector: string)`: Find AST nodes in scope using Esquery.
+- `has(selector: string)`: Check if selector exists in scope.
+- `toJSON()`: Export to plain object.
+
+### `ParamInfo` Object
+
+| Property | Type | Description |
+|------|------|------|
+| `name` | `string \| null` | Parameter name (null if destructured) |
+| `type` | `string \| null` | TS type annotation |
+| `hasDefault` | `boolean` | Has default value |
+| `isRest` | `boolean` | Is rest parameter (`...args`) |
+| `isDestructured` | `boolean` | Is object/array destructuring |
+| `pattern` | `'object' \| 'array' \| null` | Destructuring type |
+| `text` | `string` | Raw source of the parameter |
+
+### `BodyInfo` Object
+
+| Property | Type | Description |
+|------|------|------|
+| `statements` | `ASTNode[]` | Top-level statements in the body |
+| `returns` | `ASTNode[]` | All scope-aware return paths |
+| `isBlock` | `boolean` | Uses `{}` braces |
+| `isExpression` | `boolean` | Single expression (arrow functions) |
+| `text` | `string` | Raw source of the body content |
+
+**Methods:**
+
+- `query(selector)` / `has(selector)`: Scoped AST querying.
 
 ---
 
@@ -116,20 +152,62 @@ analyzer.verify(code, {
 
 ### 3. Return Path Set Verification (`returns`)
 
-Automatically analyzes all `return` paths, including nested branches:
+Automatically analyzes all `return` paths, including nested branches. You can use matchers or a **custom callback**:
 
 ```typescript
 analyzer.verify(code, {
-  returns: {
-    $any: ['args[0]', 'null'], // At least one path returns param 0 or null
-    $not: 'undefined'          // No path should explicitly return undefined
+  returns: (helper) => {
+    // helper provides convenient checks
+    return helper.isCall('fetch') || helper.isBinaryOp('+', '_', '_');
   }
+});
+```
+
+### 4. Custom Logic Hooks
+
+Perform deep validation using the full power of the API:
+
+```typescript
+analyzer.verify(code, {
+  custom: (fn) => {
+    return fn.paramCount > 0 && fn.body.has('VariableDeclaration');
+  },
+  body: {
+    custom: (body) => body.statementCount < 10
+  }
+});
+```
+
+### 5. Strict Mode
+
+By default, the engine ignores non-semantic differences. Use `strict: true` for exact structural matching:
+
+```typescript
+analyzer.verify(code, {
+  strict: true,
+  body: 'return a+b' // Will NOT match 'return (a+b)' in strict mode
 });
 ```
 
 ---
 
 ## Semantic Equivalence
+
+// ... (existing semantic content) ...
+
+---
+
+## Utilities
+
+The library exports several low-level utilities for manual AST or source processing:
+
+| Function | Description |
+|----------|-------------|
+| `stripComments(code)` | Remove all JS/TS comments. |
+| `detectTypeScript(code)` | Guess if code is TS based on syntax. |
+| `offsetToLineColumn(code, offset)` | Convert character offset to `{ line, column }`. |
+| `findInScope(node, test)` | Find nodes while respecting function scope boundaries. |
+| `tsTypeToString(typeNode)` | Normalize TS type nodes to string representation. |
 
 The engine automatically ignores non-semantic differences (unless `strict: true`):
 
