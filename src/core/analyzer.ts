@@ -1,5 +1,5 @@
 // ============================================================
-//  src/core/analyzer.ts — Analyzer 主类
+//  src/core/analyzer.ts — Main Analyzer Class
 // ============================================================
 
 import type {
@@ -19,7 +19,7 @@ import { findAll, isFunctionNode } from '../ast/traverse.js'
 import { detectTypeScript } from '../utils/source.js'
 
 /**
- * 兼容 AutoAdapter 接口的包装
+ * Internal bridge to unify different adapter interfaces.
  */
 interface AdapterBridge {
   warmup(): Promise<void> | void
@@ -27,10 +27,22 @@ interface AdapterBridge {
   getEngineStatus(): { acorn: boolean; oxc: boolean }
 }
 
+/**
+ * The primary class for analyzing JavaScript and TypeScript code.
+ *
+ * `Analyzer` handles engine selection (Acorn or high-performance OXC),
+ * source code normalization, and provides high-level APIs for extracting
+ * and validating function metadata.
+ */
 export class Analyzer {
   private readonly _bridge: AdapterBridge
   private readonly _options: Required<AnalyzerOptions>
 
+  /**
+   * Creates a new Analyzer instance.
+   *
+   * @param options - Configuration options for the analyzer.
+   */
   constructor(options: AnalyzerOptions = {}) {
     this._options = {
       threshold: options.threshold ?? 50 * 1024,
@@ -49,7 +61,7 @@ export class Analyzer {
     }
   }
 
-  // ---- 适配器桥接 ----
+  // ---- Adapter Bridging ----
 
   private _wrapSingle(adapter: ParserAdapter): AdapterBridge {
     return {
@@ -76,7 +88,7 @@ export class Analyzer {
   }
 
   /**
-   * 多种包装策略尝试解析
+   * Attempts to parse the source using various wrapping strategies to handle code snippets.
    */
   private _tryParse(
     adapter: ParserAdapter,
@@ -111,15 +123,23 @@ export class Analyzer {
     throw err
   }
 
-  // ============ 公开 API ============
+  // ============ Public API ============
 
   /**
-   * 解析单个函数
+   * Parses the input source and returns the first matching function.
+   *
+   * @param input - The source code string, a function reference, or a code snippet.
+   * @param options - Configuration options for parsing and filtering results.
+   * @returns A {@link FunctionInfo} instance containing metadata about the detected function.
+   * @throws {Error} If no function node is found or if none match the specified filters.
    *
    * @example
+   * ```typescript
+   * const analyzer = new Analyzer();
    * const fn = analyzer.parse('function add(a, b) { return a + b }');
-   * fn.name       // 'add'
-   * fn.paramCount // 2
+   * console.log(fn.name);       // 'add'
+   * console.log(fn.paramCount); // 2
+   * ```
    */
   parse(input: string | Function, options: ParseOptions = {}): FunctionInfo {
     const source =
@@ -153,11 +173,17 @@ export class Analyzer {
   }
 
   /**
-   * 解析源码中的所有函数
+   * Parses all functions found within the provided source code.
+   *
+   * @param source - The source code string to analyze.
+   * @param options - Configuration options for parsing and filtering.
+   * @returns An array of {@link FunctionInfo} for each detected function.
    *
    * @example
+   * ```typescript
    * const fns = analyzer.parseAll(fileContent);
    * fns.forEach(fn => console.log(fn.name));
+   * ```
    */
   parseAll(source: string, options: ParseOptions = {}): FunctionInfo[] {
     const isTS = options.ts ?? detectTypeScript(source)
@@ -201,14 +227,12 @@ export class Analyzer {
   }
 
   /**
-   * 解析并立即验证
+   * Parses and immediately verifies a function against a schema.
    *
-   * @example
-   * const result = analyzer.verify(
-   *   'function add(a, b) { return a + b }',
-   *   { name: 'add', paramCount: 2 }
-   * );
-   * result.passed // true
+   * @param input - The source code or function to verify.
+   * @param schema - The verification schema.
+   * @param parseOptions - Optional parsing configuration.
+   * @returns The verification result.
    */
   verify(
     input: string | Function,
@@ -218,12 +242,16 @@ export class Analyzer {
     return this.parse(input, parseOptions).verify(schema)
   }
 
-  /** 手动预热 WASM */
+  /**
+   * Manually warms up the WASM-based parser (OXC).
+   */
   async warmup(): Promise<void> {
     await this._bridge.warmup()
   }
 
-  /** 当前可用引擎 */
+  /**
+   * Gets the status of available parsing engines.
+   */
   get engines(): { acorn: boolean; oxc: boolean } {
     return this._bridge.getEngineStatus()
   }

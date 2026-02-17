@@ -1,11 +1,16 @@
 // ============================================================
-//  src/utils/source.ts — 源码处理工具
+//  src/utils/source.ts — Source Code Utilities
 // ============================================================
 
 import type { ASTNode } from '../types.js'
 
 /**
- * 按 AST 节点的 start/end 从源码切片
+ * Extracts a substring from the source code based on an AST node's boundaries.
+ *
+ * @param source - The original source code string.
+ * @param node - The AST node to slice.
+ * @param offset - The character offset used during parsing.
+ * @returns The sliced source code or null if information is missing.
  */
 export function sliceNode(
   source: string,
@@ -20,7 +25,12 @@ export function sliceNode(
 }
 
 /**
- * 提取 BlockStatement 内部内容（去掉 { }）
+ * Extracts the inner content of a BlockStatement, removing the surrounding braces.
+ *
+ * @param source - The original source code string.
+ * @param blockNode - The BlockStatement AST node.
+ * @param offset - The character offset used during parsing.
+ * @returns The trimmed inner content or null if not a block.
  */
 export function sliceBlockBody(
   source: string,
@@ -38,7 +48,10 @@ export function sliceBlockBody(
 }
 
 /**
- * 计算源码行数
+ * Counts the number of lines in a source string.
+ *
+ * @param source - The source code string.
+ * @returns The total number of lines (1-based).
  */
 export function countLines(source: string): number {
   if (!source) return 0
@@ -50,7 +63,10 @@ export function countLines(source: string): number {
 }
 
 /**
- * 计算 UTF-8 字节大小
+ * Calculates the size of a string in bytes (UTF-8).
+ *
+ * @param source - The source code string.
+ * @returns The size in bytes.
  */
 export function byteSize(source: string): number {
   if (!source) return 0
@@ -62,28 +78,36 @@ export function byteSize(source: string): number {
 }
 
 /**
- * 检测源码是否包含 TypeScript 语法特征
+ * Heuristically detects if a source string contains TypeScript syntax features.
+ *
+ * @param source - The source code string to analyze.
+ * @returns True if TypeScript features are detected.
  */
 export function detectTypeScript(source: string): boolean {
   if (!source) return false
 
   const tsPatterns: RegExp[] = [
-    /\)\s*:\s*\w+/, // 返回类型 ): number
+    /\)\s*:\s*\w+/, // Return type ): number
     /\w\s*:\s*(number|string|boolean|any|void|never|unknown|object|bigint|symbol)\b/,
     /\binterface\s+\w+/, // interface Foo
     /\btype\s+\w+\s*=/, // type Foo =
     /\benum\s+\w+/, // enum Foo
     /\bnamespace\s+\w+/, // namespace Foo
     /\bdeclare\s+(function|const|let|var|class|interface|type|enum|module|namespace)\b/,
-    /<\w+(?:\s*,\s*\w+)*>\s*\(/, // 泛型调用 <T>(
-    /\bas\s+\w+/, // 类型断言 as Type
+    /<\w+(?:\s*,\s*\w+)*>\s*\(/, // Generic call <T>(
+    /\bas\s+\w+/, // Type assertion as Type
   ]
 
   return tsPatterns.some((pattern) => pattern.test(source))
 }
 
 /**
- * 移除单行/块注释（简化版，不处理模板字符串内嵌注释）
+ * Removes single-line and multi-line comments from the source code.
+ * Note: This is a simplified version that does not handle comments
+ * inside template literals.
+ *
+ * @param source - The original source code string.
+ * @returns The source code with comments stripped.
  */
 export function stripComments(source: string): string {
   let result = ''
@@ -93,7 +117,7 @@ export function stripComments(source: string): string {
   while (i < len) {
     const ch = source[i]!
 
-    // 字符串
+    // Handle strings to avoid stripping "comments" inside them
     if (ch === '"' || ch === "'" || ch === '`') {
       const quote = ch
       result += source[i++]
@@ -113,14 +137,14 @@ export function stripComments(source: string): string {
       continue
     }
 
-    // 单行注释
+    // Single-line comments
     if (ch === '/' && source[i + 1] === '/') {
       i += 2
       while (i < len && source[i] !== '\n') i++
       continue
     }
 
-    // 块注释
+    // Multi-line comments
     if (ch === '/' && source[i + 1] === '*') {
       i += 2
       while (i < len) {
@@ -141,7 +165,11 @@ export function stripComments(source: string): string {
 }
 
 /**
- * 偏移量 → 行列号
+ * Converts a character offset to line and column numbers.
+ *
+ * @param source - The original source code string.
+ * @param offset - The 0-based character offset.
+ * @returns An object containing the 1-based line and 0-based column.
  */
 export function offsetToLineColumn(
   source: string,

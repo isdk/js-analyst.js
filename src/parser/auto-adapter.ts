@@ -1,5 +1,5 @@
 // ============================================================
-//  src/parser/auto-adapter.ts — 自动引擎选择 & 多策略解析
+//  src/parser/auto-adapter.ts — Automatic Engine Selection
 // ============================================================
 
 import { AcornAdapter } from './acorn-adapter.js'
@@ -7,12 +7,16 @@ import { OxcAdapter } from './oxc-adapter.js'
 import type { ParserAdapter } from './adapter.js'
 import type { ParseOptions, ParseResult } from '../types.js'
 
+/**
+ * Options for the AutoAdapter.
+ */
 export interface AutoAdapterOptions {
+  /** Size threshold in bytes to prefer OXC over Acorn. */
   threshold?: number
 }
 
 /**
- * 包装策略：应对不同函数字符串形态
+ * Wrapping strategy for parsing various function forms.
  */
 interface WrapStrategy {
   wrap: (s: string) => string
@@ -20,18 +24,28 @@ interface WrapStrategy {
 }
 
 const WRAP_STRATEGIES: WrapStrategy[] = [
-  { wrap: (s) => s, offset: 0 }, // 直接解析
-  { wrap: (s) => `(${s})`, offset: 1 }, // 表达式包裹
-  { wrap: (s) => `({${s}})`, offset: 2 }, // 方法简写包裹
-  { wrap: (s) => `(class{${s}})`, offset: 7 }, // class 方法包裹
+  { wrap: (s) => s, offset: 0 }, // Direct parse
+  { wrap: (s) => `(${s})`, offset: 1 }, // Wrapped in parens (expression)
+  { wrap: (s) => `({${s}})`, offset: 2 }, // Wrapped in object (method shorthand)
+  { wrap: (s) => `(class{${s}})`, offset: 7 }, // Wrapped in class (class method)
 ]
 
+/**
+ * Smart adapter that selects between Acorn and OXC based on source size
+ * and availability. It also handles various source wrapping strategies
+ * to parse code fragments.
+ */
 export class AutoAdapter {
+  /** The Acorn adapter instance. */
   readonly acorn: AcornAdapter
+  /** The OXC adapter instance. */
   readonly oxc: OxcAdapter
   private readonly threshold: number
   private warmupStarted = false
 
+  /**
+   * @param options - Configuration for the auto-adapter.
+   */
   constructor(options: AutoAdapterOptions = {}) {
     this.threshold = options.threshold ?? 50 * 1024
     this.acorn = new AcornAdapter()
@@ -39,7 +53,8 @@ export class AutoAdapter {
   }
 
   /**
-   * 空闲预热 WASM
+   * Pre-loads the OXC WASM module during idle time to improve
+   * performance for future large-file parses.
    */
   warmup(): void {
     if (this.warmupStarted) return
@@ -47,7 +62,7 @@ export class AutoAdapter {
 
     const doWarmup = () => {
       this.oxc.init().catch(() => {
-        // WASM 加载失败不是致命错误，静默降级到 acorn
+        // Silently fail warmup; fall back to Acorn if OXC unavailable
       })
     }
 
@@ -59,7 +74,10 @@ export class AutoAdapter {
   }
 
   /**
-   * 根据源码大小和引擎就绪状态选择适配器
+   * Selects the most appropriate adapter for the given source and options.
+   *
+   * @param source - The source code to be parsed.
+   * @param options - Optional engine override and other settings.
    */
   select(source: string, options?: ParseOptions): ParserAdapter {
     if (options?.engine === 'acorn') return this.acorn
@@ -72,7 +90,12 @@ export class AutoAdapter {
   }
 
   /**
-   * 用多种包装策略尝试解析函数源码
+   * Attempts to parse the source using multiple wrapping strategies.
+   *
+   * @param source - The function source or fragment.
+   * @param options - Parsing configuration.
+   * @returns The parsing result including the AST and applied offset.
+   * @throws {Error} If all parsing attempts fail.
    */
   parseFunctionSource(source: string, options: ParseOptions = {}): ParseResult {
     const adapter = this.select(source, options)

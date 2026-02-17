@@ -1,5 +1,5 @@
 // ============================================================
-//  src/core/verify.ts — 声明式验证引擎
+//  src/core/verify.ts — Declarative Verification Engine
 // ============================================================
 
 import type {
@@ -22,33 +22,44 @@ import {
 // =================== ReturnHelper ===================
 
 /**
- * Return 语句辅助判断工具
- * 让验证 schema 中的 returns 回调写起来更简洁
+ * Implementation of {@link IReturnHelper} to assist in verifying
+ * return statements within a function body.
+ *
+ * Provides a set of fluent predicate methods for checking common
+ * return value patterns.
  */
 class ReturnHelper implements IReturnHelper {
   readonly node: ASTNode | null
 
+  /**
+   * @param node - The AST node of the return argument.
+   */
   constructor(node: ASTNode | null) {
     this.node = node
   }
 
+  /** Checks if the return value is a binary expression with a specific operator. */
   isBinaryOp(operator: string, leftName: string, rightName: string): boolean {
     return isBinaryExpression(this.node, operator, leftName, rightName)
   }
 
+  /** Checks if the return value is a call to a specific function or method. */
   isCall(calleeName?: string): boolean {
     return isCallExpression(this.node, calleeName)
   }
 
+  /** Checks if the return value is a specific literal. */
   isLiteral(value?: unknown): boolean {
     if (this.node?.type !== 'Literal') return false
     return value === undefined || (this.node as any).value === value
   }
 
+  /** Checks if the return value is a specific identifier. */
   isIdentifier(name?: string): boolean {
     return isIdentifier(this.node, name)
   }
 
+  /** Checks if the return value is a member access (e.g., `obj.prop`). */
   isMemberAccess(objName: string, propName: string): boolean {
     const n = this.node
     if (n?.type !== 'MemberExpression') return false
@@ -57,6 +68,7 @@ class ReturnHelper implements IReturnHelper {
     return isIdentifier(obj, objName) && isIdentifier(prop, propName)
   }
 
+  /** Checks if the return value is a template literal. */
   isTemplateLiteral(): boolean {
     return this.node?.type === 'TemplateLiteral'
   }
@@ -64,17 +76,30 @@ class ReturnHelper implements IReturnHelper {
 
 // =================== Verifier ===================
 
+/**
+ * Internal class responsible for executing the verification logic
+ * against a given schema.
+ */
 class Verifier {
   private readonly fn: IFunctionInfo
 
+  /**
+   * @param fn - The function info to verify.
+   */
   constructor(fn: IFunctionInfo) {
     this.fn = fn
   }
 
+  /**
+   * Executes all checks defined in the schema.
+   *
+   * @param schema - The schema to verify against.
+   * @returns The combined result of all verification checks.
+   */
   verify(schema: VerifySchema): VerifyResult {
     const failures: VerifyFailure[] = []
 
-    // ---- 基本属性 ----
+    // ---- Base Properties ----
     this.check(failures, 'name', schema.name, this.fn.name)
     this.check(failures, 'kind', schema.kind, this.fn.kind)
     this.check(failures, 'syntax', schema.syntax, this.fn.syntax)
@@ -85,17 +110,17 @@ class Verifier {
     this.check(failures, 'returnType', schema.returnType, this.fn.returnType)
     this.check(failures, 'paramCount', schema.paramCount, this.fn.paramCount)
 
-    // ---- 逐个参数验证 ----
+    // ---- Parameters Verification ----
     if (schema.params !== undefined) {
       this.verifyParams(failures, schema.params)
     }
 
-    // ---- 函数体验证 ----
+    // ---- Body Verification ----
     if (schema.body !== undefined) {
       this.verifyBody(failures, schema.body)
     }
 
-    // ---- 自定义整体验证 ----
+    // ---- Custom Global Verification ----
     if (typeof schema.custom === 'function') {
       this.runCustom(failures, 'custom', () => schema.custom!(this.fn))
     }
@@ -109,7 +134,7 @@ class Verifier {
     }
   }
 
-  // ---- 参数验证 ----
+  // ---- Private Verification Helpers ----
 
   private verifyParams(
     failures: VerifyFailure[],
@@ -154,8 +179,6 @@ class Verifier {
     })
   }
 
-  // ---- 函数体验证 ----
-
   private verifyBody(failures: VerifyFailure[], schema: BodySchema): void {
     const body = this.fn.body
 
@@ -166,7 +189,7 @@ class Verifier {
       body.statementCount
     )
 
-    // has
+    // contains (has)
     if (schema.has !== undefined) {
       const selectors = Array.isArray(schema.has) ? schema.has : [schema.has]
       for (const sel of selectors) {
@@ -181,7 +204,7 @@ class Verifier {
       }
     }
 
-    // notHas
+    // not contains (notHas)
     if (schema.notHas !== undefined) {
       const selectors = Array.isArray(schema.notHas)
         ? schema.notHas
@@ -198,7 +221,7 @@ class Verifier {
       }
     }
 
-    // returns
+    // returns check
     if (typeof schema.returns === 'function') {
       const returns = body.returns
       for (let i = 0; i < returns.length; i++) {
@@ -223,17 +246,14 @@ class Verifier {
       }
     }
 
-    // custom
+    // custom body check
     if (typeof schema.custom === 'function') {
       this.runCustom(failures, 'body.custom', () => schema.custom!(body))
     }
   }
 
-  // ---- 通用匹配 ----
-
   /**
-   * 通用匹配：支持精确值 / 正则 / 函数断言
-   * expected 为 undefined 时跳过检查
+   * Generic matching logic supporting literals, regex, and functions.
    */
   private check<T>(
     failures: VerifyFailure[],
@@ -267,7 +287,7 @@ class Verifier {
     }
   }
 
-  /** 执行自定义验证函数 */
+  /** Runs a custom verification predicate. */
   private runCustom(
     failures: VerifyFailure[],
     path: string,
@@ -284,8 +304,14 @@ class Verifier {
   }
 }
 
-// =================== 导出 ===================
+// =================== Export ===================
 
+/**
+ * Creates a verifier for the given function information.
+ *
+ * @param fnInfo - The function information to be verified.
+ * @returns A verifier instance.
+ */
 export function createVerifier(fnInfo: IFunctionInfo) {
   return new Verifier(fnInfo)
 }

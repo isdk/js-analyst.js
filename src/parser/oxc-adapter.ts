@@ -1,15 +1,14 @@
 // ============================================================
-//  src/parser/oxc-adapter.ts
+//  src/parser/oxc-adapter.ts — OXC Parser Adapter
 // ============================================================
 
 import { ParserAdapter } from './adapter.js'
 import type { ASTNode, ParseOptions } from '../types.js'
 
 /**
- * oxc-parser WASM 模块的动态导入类型
+ * Interface for the dynamically imported OXC WASM module.
  *
- * 因为 @oxc-parser/wasm 是 optionalDependency，
- * 我们不能在顶层 import，需要动态导入。
+ * OXC is an optional dependency to keep the core package light.
  */
 interface OxcModule {
   default: () => Promise<void>
@@ -22,6 +21,12 @@ interface OxcModule {
   }
 }
 
+/**
+ * Parser adapter for the high-performance OXC engine (WASM).
+ *
+ * OXC is significantly faster than JS-based parsers, making it
+ * ideal for large files or batch processing.
+ */
 export class OxcAdapter extends ParserAdapter {
   private module: OxcModule | null = null
 
@@ -29,11 +34,16 @@ export class OxcAdapter extends ParserAdapter {
     super('oxc')
   }
 
+  /**
+   * Dynamically loads and initializes the OXC WASM module.
+   *
+   * @throws {Error} If the `@oxc-parser/wasm` package is not installed or fails to load.
+   */
   async init(): Promise<void> {
     if (this.ready) return
 
     try {
-      // 动态导入，避免在未安装时报错
+      // Dynamic import to avoid errors if not installed
       this.module = (await import('@oxc-parser/wasm')) as unknown as OxcModule
       if (typeof this.module.default === 'function') {
         await (this.module as any).default()
@@ -49,6 +59,13 @@ export class OxcAdapter extends ParserAdapter {
     }
   }
 
+  /**
+   * Parses the source using the OXC engine.
+   *
+   * @param source - The source code to parse.
+   * @param options - Configuration options.
+   * @throws {SyntaxError} If the source code contains syntax errors.
+   */
   parse(source: string, options: ParseOptions = {}): ASTNode {
     if (!this.ready || !this.module) {
       throw new Error('OxcAdapter not initialized. Call init() first.')

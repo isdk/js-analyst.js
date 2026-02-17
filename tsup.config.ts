@@ -36,6 +36,7 @@ export default defineConfig({
       ],
     }
   },
+  /*
   onSuccess: async () => {
     const copyDir = (src: string, dest: string) => {
       if (!fs.existsSync(src)) return
@@ -57,4 +58,5 @@ export default defineConfig({
 
     console.log('Templates copied to dist/templates')
   },
+  */
 })

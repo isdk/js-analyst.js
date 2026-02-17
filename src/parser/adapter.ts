@@ -1,34 +1,51 @@
 // ============================================================
-//  src/parser/adapter.ts — 解析器适配器抽象基类
+//  src/parser/adapter.ts — Parser Adapter Abstract Base
 // ============================================================
 
 import type { ASTNode, EngineName, ParseOptions } from '../types.js'
 
 /**
- * 解析器适配器接口
+ * Base class for parser adapters.
  *
- * 所有具体解析器（acorn / oxc）都实现此接口，
- * 上层代码只依赖此抽象，不依赖具体实现。
+ * All concrete parser implementations (e.g., Acorn, OXC) must extend this class.
+ * This abstraction allows the core logic to remain engine-agnostic.
  */
 export abstract class ParserAdapter {
+  /** The name of the parsing engine. */
   readonly name: EngineName
+  /** Whether the parser is initialized and ready to use. */
   ready: boolean
 
+  /**
+   * @param name - The unique name of the parsing engine.
+   */
   constructor(name: EngineName) {
     this.name = name
     this.ready = false
   }
 
-  /** 异步初始化（WASM 解析器需要） */
+  /**
+   * Asynchronously initializes the parser.
+   * Necessary for WASM-based parsers like OXC.
+   */
   async init(): Promise<void> {
     this.ready = true
   }
 
-  /** 同步初始化（JS 解析器） */
+  /**
+   * Synchronously initializes the parser.
+   * Used for pure JavaScript parsers like Acorn.
+   */
   initSync(): void {
     this.ready = true
   }
 
-  /** 解析源码，返回 ESTree AST 根节点 */
+  /**
+   * Parses the source code and returns the ESTree AST root node.
+   *
+   * @param source - The source code to parse.
+   * @param options - Optional parsing configuration.
+   * @returns The root node of the parsed AST.
+   */
   abstract parse(source: string, options?: ParseOptions): ASTNode
 }

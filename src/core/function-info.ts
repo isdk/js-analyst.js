@@ -1,5 +1,5 @@
 // ============================================================
-//  src/core/function-info.ts — 函数信息核心封装
+//  src/core/function-info.ts — Function Metadata Wrapper
 // ============================================================
 
 import type {
@@ -18,6 +18,13 @@ import { BodyInfo } from './body-info.js'
 import { createVerifier } from './verify.js'
 import { tsTypeToString } from '../utils/ts-type.js'
 
+/**
+ * Implementation of {@link IFunctionInfo} that provides detailed metadata
+ * about a detected function.
+ *
+ * This class wraps an AST node and provides high-level getters for
+ * function properties, parameters, and its body.
+ */
 export class FunctionInfo implements IFunctionInfo {
   private readonly _node: FunctionNode
   private readonly _wrapper: ASTNode | null
@@ -29,10 +36,19 @@ export class FunctionInfo implements IFunctionInfo {
   private readonly _syntax: FunctionSyntax
   private readonly _static: boolean
 
-  // 懒初始化缓存
+  // Lazy initialization cache
   private _params?: ParamInfo[]
   private _body?: BodyInfo
 
+  /**
+   * Internal constructor for FunctionInfo.
+   *
+   * @param node - The AST node representing the function or its wrapper.
+   * @param source - The original source code string.
+   * @param offset - The character offset used during parsing.
+   * @param engine - The name of the engine used to parse this function.
+   * @internal
+   */
   constructor(node: ASTNode, source: string, offset: number, engine: string) {
     this._source = source
     this._offset = offset
@@ -46,6 +62,9 @@ export class FunctionInfo implements IFunctionInfo {
     this._static = isStatic
   }
 
+  /**
+   * Normalizes the function node and extracts its kind and syntax.
+   */
   private _parseNode(node: ASTNode): {
     funcNode: ASTNode
     wrapper: ASTNode | null
@@ -102,34 +121,51 @@ export class FunctionInfo implements IFunctionInfo {
         syntax = inner.syntax
         break
       case 'FunctionExpression':
-        // 普通表达式
+        // Standard expression
         break
     }
 
     return { funcNode, wrapper, kind, syntax, isStatic }
   }
 
-  // ========== 基础属性 ==========
+  // ========== Base Properties ==========
 
+  /** The underlying ESTree function node. */
   get node(): ASTNode {
     return this._node
   }
+
+  /** The wrapper node (e.g., MethodDefinition, VariableDeclarator), if any. */
   get wrapper(): ASTNode | null {
     return this._wrapper
   }
+
+  /** The name of the engine used to parse this function. */
   get engine(): string {
     return this._engine
   }
+
+  /** The functional kind of the function (e.g., 'method', 'getter'). */
   get kind(): FunctionKind {
     return this._kind
   }
+
+  /** The syntactic form of the function (e.g., 'declaration', 'arrow'). */
   get syntax(): FunctionSyntax {
     return this._syntax
   }
+
+  /** Whether the function is a static class member. */
   get isStatic(): boolean {
     return this._static
   }
 
+  /**
+   * The name of the function.
+   *
+   * Returns the identifier for named functions, variable name for assigned
+   * anonymous functions, or the property key for methods.
+   */
   get name(): string | null {
     if (this._node.id) return this._node.id.name
     if (this._wrapper) {
@@ -147,27 +183,34 @@ export class FunctionInfo implements IFunctionInfo {
     return null
   }
 
+  /** Whether the function is marked as async. */
   get isAsync(): boolean {
     return this._node.async === true
   }
+
+  /** Whether the function is a generator function. */
   get isGenerator(): boolean {
     return this._node.generator === true
   }
 
+  /** Whether the function is an arrow function. */
   get isArrow(): boolean {
     return this._syntax === 'arrow'
   }
 
+  /** Whether the function is a declaration. */
   get isDeclaration(): boolean {
     return this._syntax === 'declaration'
   }
 
+  /** Whether the function is a function expression. */
   get isExpression(): boolean {
     return this._syntax === 'expression'
   }
 
-  // ========== 参数 ==========
+  // ========== Parameters ==========
 
+  /** A list of metadata for each function parameter. */
   get params(): ParamInfo[] {
     if (!this._params) {
       this._params = (this._node.params ?? []).map(
@@ -177,28 +220,42 @@ export class FunctionInfo implements IFunctionInfo {
     return this._params
   }
 
+  /** The number of parameters defined in the function signature. */
   get paramCount(): number {
     return this.params.length
   }
 
+  /**
+   * Gets parameter metadata by its index.
+   * @param index - The 0-based parameter index.
+   */
   param(index: number): ParamInfo | null {
     return this.params[index] ?? null
   }
 
+  /**
+   * Gets parameter metadata by its name.
+   * @param name - The name of the parameter to find.
+   */
   paramByName(name: string): ParamInfo | null {
     return this.params.find((p) => p.name === name) ?? null
   }
 
-  // ========== 返回类型 ==========
+  // ========== Return Type ==========
 
+  /**
+   * The string representation of the TypeScript return type.
+   * Returns null if no type annotation is present.
+   */
   get returnType(): string | null {
     const rt = this._node.returnType as TSTypeAnnotationWrapper | undefined
     if (!rt?.typeAnnotation) return null
     return tsTypeToString(rt.typeAnnotation, this._source, this._offset)
   }
 
-  // ========== 函数体 ==========
+  // ========== Body ==========
 
+  /** Metadata about the function body. */
   get body(): BodyInfo {
     if (!this._body) {
       this._body = new BodyInfo(
@@ -211,24 +268,37 @@ export class FunctionInfo implements IFunctionInfo {
     return this._body
   }
 
-  // ========== 查询 ==========
+  // ========== Querying ==========
 
+  /**
+   * Searches for AST nodes matching the CSS-like selector within the function scope.
+   * @param selector - The Esquery selector string.
+   */
   query(selector: string): ASTNode[] {
     return this.body.query(selector)
   }
 
+  /**
+   * Checks if any AST nodes match the CSS-like selector within the function scope.
+   * @param selector - The Esquery selector string.
+   */
   has(selector: string): boolean {
     return this.body.has(selector)
   }
 
-  // ========== 验证 ==========
+  // ========== Verification ==========
 
+  /**
+   * Verifies the function against a specified schema.
+   * @param schema - The validation rules to check.
+   */
   verify(schema: VerifySchema): VerifyResult {
     return createVerifier(this).verify(schema)
   }
 
-  // ========== 序列化 ==========
+  // ========== Serialization ==========
 
+  /** Serializes the function information to a plain JSON object. */
   toJSON(): FunctionInfoJSON {
     return {
       name: this.name,

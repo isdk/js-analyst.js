@@ -1,12 +1,12 @@
 // ============================================================
-//  src/ast/query.ts — 简易 AST 查询引擎
+//  src/ast/query.ts — Simple AST Query Engine
 // ============================================================
 
 import type { ASTNode } from '../types.js'
 import { findAll, findInScope } from './traverse.js'
 
 /**
- * 解析后的选择器
+ * Represents a parsed selector.
  */
 interface ParsedSelector {
   type: string
@@ -14,13 +14,12 @@ interface ParsedSelector {
 }
 
 /**
- * 解析选择器字符串
+ * Parses a CSS-like selector string for AST nodes.
  *
- * 支持语法:
- *   - `'ReturnStatement'`                    按类型
- *   - `'Identifier[name="x"]'`              按类型 + 单属性
- *   - `'BinaryExpression[operator="+"]'`     按类型 + 单属性
- *   - `'CallExpression[callee.name="foo"]'`  暂不支持深层属性
+ * Currently supports:
+ *   - `'ReturnStatement'`                    (by type)
+ *   - `'Identifier[name="x"]'`              (by type + single attribute)
+ *   - `'BinaryExpression[operator="+"]'`     (by type + single attribute)
  */
 function parseSelector(selector: string): ParsedSelector {
   const match = selector.match(/^(\w+)(?:\[(.+)\])?$/)
@@ -32,7 +31,7 @@ function parseSelector(selector: string): ParsedSelector {
   const attrs: Record<string, string> = {}
 
   if (match[2]) {
-    // 支持多属性: [name="x",operator="+"]
+    // Support multiple attributes: [name="x",operator="+"]
     const attrParts = match[2].split(',')
     for (const part of attrParts) {
       const eqIndex = part.indexOf('=')
@@ -50,7 +49,7 @@ function parseSelector(selector: string): ParsedSelector {
 }
 
 /**
- * 构建匹配谓词
+ * Builds a predicate function from a selector string.
  */
 function buildPredicate(selector: string): (node: ASTNode) => boolean {
   const { type, attrs } = parseSelector(selector)
@@ -66,12 +65,13 @@ function buildPredicate(selector: string): (node: ASTNode) => boolean {
 }
 
 /**
- * 查询所有匹配节点
+ * Queries the AST for all nodes matching the given selector.
  *
- * @param root    - 根节点
- * @param selector - 查询选择器
- * @param scoped  - 是否限制在当前函数作用域
- * @param owner   - 作用域所属函数节点
+ * @param root - The root node to start searching from.
+ * @param selector - The CSS-like selector string.
+ * @param scoped - Whether to limit search to the current function scope.
+ * @param owner - The function node defining the scope (required if scoped is true).
+ * @returns An array of matching AST nodes.
  */
 export function query(
   root: ASTNode,
@@ -88,7 +88,13 @@ export function query(
 }
 
 /**
- * 是否存在匹配节点
+ * Checks if the AST contains any nodes matching the given selector.
+ *
+ * @param root - The root node to start searching from.
+ * @param selector - The CSS-like selector string.
+ * @param scoped - Whether to limit search to the current function scope.
+ * @param owner - The function node defining the scope.
+ * @returns True if at least one match is found.
  */
 export function has(
   root: ASTNode,

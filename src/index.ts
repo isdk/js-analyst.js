@@ -7,33 +7,44 @@ import type {
 } from './types.js'
 import type { FunctionInfo } from './core/function-info.js'
 
-// =================== 工厂函数 ===================
+// =================== Factory Functions ===================
 
 /**
- * 创建分析器实例（推荐用法）
+ * Creates a new Analyzer instance.
+ *
+ * This is the recommended way to instantiate the analyzer with custom options.
+ *
+ * @param options - Configuration options for the analyzer.
+ * @returns A new {@link Analyzer} instance.
  *
  * @example
+ * ```typescript
  * const analyzer = createAnalyzer();
  * const fn = analyzer.parse('function add(a, b) { return a + b }');
  * console.log(fn.name);       // 'add'
  * console.log(fn.paramCount); // 2
+ * ```
  *
  * @example
- * // 指定引擎
+ * // Specify a specific engine
  * const analyzer = createAnalyzer({ engine: 'acorn' });
  *
  * @example
- * // 自定义 WASM 切换阈值
+ * // Custom WASM switching threshold
  * const analyzer = createAnalyzer({ threshold: 100 * 1024 });
  */
 export function createAnalyzer(options?: AnalyzerOptions): Analyzer {
   return new Analyzer(options)
 }
 
-// =================== 便捷快速调用 ===================
+// =================== Quick Convenience APIs ===================
 
 let _default: Analyzer | null = null
 
+/**
+ * Gets the default singleton Analyzer instance.
+ * @internal
+ */
 function getDefault(): Analyzer {
   if (!_default) {
     _default = new Analyzer({ warmup: true })
@@ -42,11 +53,17 @@ function getDefault(): Analyzer {
 }
 
 /**
- * 快速解析（使用默认单例分析器）
+ * Quickly parses a function using a default singleton analyzer.
+ *
+ * @param input - The source code string or a function reference.
+ * @param options - Optional parsing configuration.
+ * @returns Metadata for the detected function.
  *
  * @example
+ * ```typescript
  * const fn = parse('(a, b) => a + b');
- * fn.isArrow // true
+ * console.log(fn.isArrow); // true
+ * ```
  */
 export function parse(
   input: string | Function,
@@ -56,7 +73,11 @@ export function parse(
 }
 
 /**
- * 快速解析所有函数
+ * Quickly parses all functions in a source string using a default singleton analyzer.
+ *
+ * @param source - The source code string.
+ * @param options - Optional parsing configuration.
+ * @returns An array of {@link FunctionInfo} for each detected function.
  */
 export function parseAll(
   source: string,
@@ -66,14 +87,21 @@ export function parseAll(
 }
 
 /**
- * 快速验证
+ * Quickly verifies a function against a schema using a default singleton analyzer.
+ *
+ * @param input - The source code string or a function reference.
+ * @param schema - The validation schema to check against.
+ * @param options - Optional parsing configuration.
+ * @returns The verification result.
  *
  * @example
+ * ```typescript
  * const result = verify(
  *   'function add(a, b) { return a + b }',
  *   { name: 'add', paramCount: 2 }
  * );
- * result.passed // true
+ * console.log(result.passed); // true
+ * ```
  */
 export function verify(
   input: string | Function,
@@ -83,7 +111,7 @@ export function verify(
   return getDefault().verify(input, schema, options)
 }
 
-// =================== 类 & 核心导出 ===================
+// =================== Core Classes & Exports ===================
 
 export { Analyzer } from './core/analyzer.js'
 export { FunctionInfo } from './core/function-info.js'
@@ -91,14 +119,14 @@ export { ParamInfo } from './core/param-info.js'
 export { BodyInfo } from './core/body-info.js'
 export { createVerifier } from './core/verify.js'
 
-// =================== 解析器适配器 ===================
+// =================== Parser Adapters ===================
 
 export { ParserAdapter } from './parser/adapter.js'
 export { AcornAdapter } from './parser/acorn-adapter.js'
 export { OxcAdapter } from './parser/oxc-adapter.js'
 export { AutoAdapter } from './parser/auto-adapter.js'
 
-// =================== AST 工具 ===================
+// =================== AST Utilities ===================
 
 export {
   findFirst,
@@ -109,7 +137,7 @@ export {
 export { query, has } from './ast/query.js'
 export * as helpers from './ast/helpers.js'
 
-// =================== 工具函数 ===================
+// =================== Utility Functions ===================
 
 export { tsTypeToString } from './utils/ts-type.js'
 export {
@@ -122,7 +150,7 @@ export {
   offsetToLineColumn,
 } from './utils/source.js'
 
-// =================== 类型导出 ===================
+// =================== Type Exports ===================
 
 export type {
   // AST
@@ -138,14 +166,14 @@ export type {
   SourceLocation,
   Position,
 
-  // 配置
+  // Config
   AnalyzerOptions,
   ParseOptions,
   ParseResult,
   EngineName,
   EngineOption,
 
-  // 验证
+  // Verification
   VerifySchema,
   ParamSchema,
   BodySchema,
@@ -153,7 +181,7 @@ export type {
   VerifyFailure,
   Matcher,
 
-  // 接口
+  // Interfaces
   IFunctionInfo,
   IParamInfo,
   IBodyInfo,

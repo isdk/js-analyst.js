@@ -1,11 +1,12 @@
 // ============================================================
-//  src/ast/helpers.ts — AST 节点判断 & 工具
+//  src/ast/helpers.ts — AST Node Predicates & Utilities
 // ============================================================
 
 import type { ASTNode } from '../types.js'
 
-// ---------- 类型集合 ----------
+// ---------- Type Collections ----------
 
+/** Node types that represent various function forms. */
 export const FUNCTION_TYPES = new Set([
   'FunctionDeclaration',
   'FunctionExpression',
@@ -17,6 +18,7 @@ export const FUNCTION_TYPES = new Set([
   'VariableDeclarator',
 ] as const)
 
+/** Node types that represent loops. */
 export const LOOP_TYPES = new Set([
   'ForStatement',
   'ForInStatement',
@@ -25,14 +27,18 @@ export const LOOP_TYPES = new Set([
   'DoWhileStatement',
 ] as const)
 
+/** Node types that represent declarations. */
 export const DECLARATION_TYPES = new Set([
   'VariableDeclaration',
   'FunctionDeclaration',
   'ClassDeclaration',
 ] as const)
 
-// ---------- 类型守卫 & 判断函数 ----------
+// ---------- Type Guards & Predicates ----------
 
+/**
+ * Checks if the value is a valid AST node.
+ */
 export function isNode(value: unknown): value is ASTNode {
   return (
     value != null &&
@@ -42,6 +48,9 @@ export function isNode(value: unknown): value is ASTNode {
   )
 }
 
+/**
+ * Checks if the node is a function or a wrapper containing a function.
+ */
 export function isFunctionNode(node: unknown): boolean {
   if (!isNode(node)) return false
   const type = node.type
@@ -55,20 +64,32 @@ export function isFunctionNode(node: unknown): boolean {
   return false
 }
 
+/**
+ * Checks if the node is a loop statement.
+ */
 export function isLoopNode(node: unknown): boolean {
   return isNode(node) && LOOP_TYPES.has(node.type as any)
 }
 
+/**
+ * Checks if the node is an identifier, optionally matching a specific name.
+ */
 export function isIdentifier(node: unknown, name?: string): boolean {
   if (!isNode(node) || node.type !== 'Identifier') return false
   return name === undefined || (node as any).name === name
 }
 
+/**
+ * Checks if the node is a literal, optionally matching a specific value.
+ */
 export function isLiteral(node: unknown, value?: unknown): boolean {
   if (!isNode(node) || node.type !== 'Literal') return false
   return value === undefined || (node as any).value === value
 }
 
+/**
+ * Checks if the node is a member expression, optionally matching object/property names.
+ */
 export function isMemberExpression(
   node: unknown,
   objName?: string,
@@ -84,6 +105,9 @@ export function isMemberExpression(
   return true
 }
 
+/**
+ * Checks if the node is a call expression, optionally matching the callee name.
+ */
 export function isCallExpression(node: unknown, calleeName?: string): boolean {
   if (!isNode(node) || node.type !== 'CallExpression') return false
   if (calleeName === undefined) return true
@@ -98,6 +122,9 @@ export function isCallExpression(node: unknown, calleeName?: string): boolean {
   return false
 }
 
+/**
+ * Checks if the node is a binary expression matching the operator and/or operands.
+ */
 export function isBinaryExpression(
   node: unknown,
   operator?: string,
@@ -112,6 +139,9 @@ export function isBinaryExpression(
   return true
 }
 
+/**
+ * Checks if the node is an assignment expression, optionally matching the operator.
+ */
 export function isAssignmentExpression(
   node: unknown,
   operator?: string
@@ -120,45 +150,57 @@ export function isAssignmentExpression(
   return operator === undefined || (node as any).operator === operator
 }
 
+/** Checks if the node is a return statement. */
 export function isReturnStatement(node: unknown): boolean {
   return isNode(node) && node.type === 'ReturnStatement'
 }
 
+/** Checks if the node is an await expression. */
 export function isAwaitExpression(node: unknown): boolean {
   return isNode(node) && node.type === 'AwaitExpression'
 }
 
+/** Checks if the node is a yield expression. */
 export function isYieldExpression(node: unknown): boolean {
   return isNode(node) && node.type === 'YieldExpression'
 }
 
+/** Checks if the node is a throw statement. */
 export function isThrowStatement(node: unknown): boolean {
   return isNode(node) && node.type === 'ThrowStatement'
 }
 
+/** Checks if the node is a block statement. */
 export function isBlockStatement(node: unknown): boolean {
   return isNode(node) && node.type === 'BlockStatement'
 }
 
+/** Checks if the node is an arrow function. */
 export function isArrowFunction(node: unknown): boolean {
   return isNode(node) && node.type === 'ArrowFunctionExpression'
 }
 
+/** Checks if the node is a conditional (ternary) expression. */
 export function isConditionalExpression(node: unknown): boolean {
   return isNode(node) && node.type === 'ConditionalExpression'
 }
 
+/** Checks if the node is a template literal. */
 export function isTemplateLiteral(node: unknown): boolean {
   return isNode(node) && node.type === 'TemplateLiteral'
 }
 
-// ---------- 工具函数 ----------
+// ---------- Utility Functions ----------
 
 /**
- * 安全深层取值
+ * Safely gets a deep property from an AST node using a dot-separated path.
+ *
+ * @param node - The root AST node.
+ * @param path - Dot-separated property path (e.g., 'callee.object.name').
+ * @returns The value at the path, or undefined if not found.
  *
  * @example
- * nodeGet(node, 'callee.object.name')  // node?.callee?.object?.name
+ * nodeGet(node, 'callee.object.name')  // equivalent to node?.callee?.object?.name
  */
 export function nodeGet(node: ASTNode, path: string): unknown {
   const parts = path.split('.')
@@ -170,11 +212,13 @@ export function nodeGet(node: ASTNode, path: string): unknown {
   return current
 }
 
-/** 非元数据的 key（用于遍历子节点时跳过） */
+/** Keys to skip during child node traversal. */
 const META_KEYS = new Set(['type', 'start', 'end', 'loc', 'range', 'parent'])
 
 /**
- * 获取节点的所有子 AST 节点
+ * Returns all direct child AST nodes of a given node.
+ *
+ * @param node - The parent AST node.
  */
 export function getChildren(node: ASTNode): ASTNode[] {
   const children: ASTNode[] = []

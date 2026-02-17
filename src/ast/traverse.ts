@@ -1,14 +1,19 @@
 // ============================================================
-//  src/ast/traverse.ts — AST 遍历（不依赖任何解析器）
+//  src/ast/traverse.ts — AST Traversal Utilities
 // ============================================================
 
 import type { ASTNode } from '../types.js'
 import { isNode, isFunctionNode as isFuncNode } from './helpers.js'
 
+/** A predicate function used to match AST nodes. */
 type Predicate = (node: ASTNode) => boolean
 
 /**
- * 深度优先查找第一个匹配节点
+ * Performs a depth-first search to find the first node that matches the predicate.
+ *
+ * @param node - The starting node or value.
+ * @param predicate - The condition to match.
+ * @returns The first matching node, or null if none found.
  */
 export function findFirst(node: unknown, predicate: Predicate): ASTNode | null {
   if (!isNode(node)) return null
@@ -32,7 +37,12 @@ export function findFirst(node: unknown, predicate: Predicate): ASTNode | null {
 }
 
 /**
- * 查找所有匹配节点
+ * Traverses the AST and returns all nodes that match the predicate.
+ *
+ * @param node - The starting node or value.
+ * @param predicate - The condition to match.
+ * @param results - Internal accumulator for results.
+ * @returns An array of matching AST nodes.
  */
 export function findAll(
   node: unknown,
@@ -58,11 +68,14 @@ export function findAll(
 }
 
 /**
- * 在当前函数作用域内查找（不深入嵌套函数）
+ * Traverses the AST within the current function's scope.
+ * It stops descending when it encounters a nested function definition.
  *
- * @param node    - 当前遍历节点
- * @param predicate - 匹配条件
- * @param owner   - 所属函数节点（遇到其他函数节点时停止）
+ * @param node - The starting node.
+ * @param predicate - The condition to match.
+ * @param owner - The function node that defines the current scope.
+ * @param results - Internal accumulator for results.
+ * @returns An array of matching nodes within the scope.
  */
 export function findInScope(
   node: unknown,
@@ -73,7 +86,7 @@ export function findInScope(
   if (!isNode(node)) return results
   if (predicate(node)) results.push(node)
 
-  // 遇到嵌套函数时停止深入（但 owner 自身不停止）
+  // Stop descending when a nested function is found (unless it's the owner)
   if (isFuncNode(node) && node !== owner) return results
 
   for (const [key, val] of Object.entries(node)) {
@@ -91,5 +104,5 @@ export function findInScope(
   return results
 }
 
-// 重新导出 helpers 中的 isFunctionNode 以保持向后兼容
+// Re-export from helpers for backward compatibility
 export { isFuncNode as isFunctionNode }

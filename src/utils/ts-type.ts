@@ -1,9 +1,10 @@
 // ============================================================
-//  src/utils/ts-type.ts — TS 类型节点 → 可读字符串
+//  src/utils/ts-type.ts — TS Type Node to Readable String
 // ============================================================
 
 import type { TSTypeNode } from '../types.js'
 
+/** Map of TS type node types to their readable keyword representations. */
 const KEYWORD_MAP: Record<string, string> = {
   TSNumberKeyword: 'number',
   TSStringKeyword: 'string',
@@ -20,7 +21,13 @@ const KEYWORD_MAP: Record<string, string> = {
 }
 
 /**
- * 将 TS AST 类型节点转为可读的类型字符串
+ * Converts a TypeScript AST type node into a human-readable string representation.
+ *
+ * @param tsNode - The TS type node to convert.
+ * @param source - Optional source code for slicing fallback.
+ * @param offset - Optional character offset used during parsing.
+ * @returns A readable type string (e.g., 'number', 'Promise<string>', 'string | number'),
+ *          or null if the node is empty.
  *
  * @example
  * TSNumberKeyword              → 'number'
@@ -35,11 +42,11 @@ export function tsTypeToString(
 ): string | null {
   if (!tsNode) return null
 
-  // 基础关键字
+  // Base Keywords
   const keyword = KEYWORD_MAP[tsNode.type]
   if (keyword) return keyword
 
-  // 类型引用: Promise, Array, User, Map<K, V> 等
+  // Type References: Promise, Array, User, Map<K, V>, etc.
   if (tsNode.type === 'TSTypeReference') {
     const name =
       tsNode.typeName?.name ??
@@ -56,27 +63,27 @@ export function tsTypeToString(
     return name
   }
 
-  // 数组: number[]
+  // Arrays: number[]
   if (tsNode.type === 'TSArrayType') {
     const el = tsTypeToString(tsNode.elementType!, source, offset)
     return `${el}[]`
   }
 
-  // 联合: string | number
+  // Unions: string | number
   if (tsNode.type === 'TSUnionType' && tsNode.types) {
     return tsNode.types
       .map((t) => tsTypeToString(t, source, offset))
       .join(' | ')
   }
 
-  // 交叉: A & B
+  // Intersections: A & B
   if (tsNode.type === 'TSIntersectionType' && tsNode.types) {
     return tsNode.types
       .map((t) => tsTypeToString(t, source, offset))
       .join(' & ')
   }
 
-  // 元组: [string, number]
+  // Tuples: [string, number]
   if (tsNode.type === 'TSTupleType') {
     const elements = (tsNode as any).elementTypes as TSTypeNode[] | undefined
     if (elements) {
@@ -85,23 +92,23 @@ export function tsTypeToString(
     }
   }
 
-  // 函数类型: (x: number) => string
+  // Function Types: (x: number) => string
   if (tsNode.type === 'TSFunctionType') {
     return '(...) => ...'
   }
 
-  // 字面量类型: 'hello' | 42 | true
+  // Literal Types: 'hello' | 42 | true
   if (tsNode.type === 'TSLiteralType') {
     const lit = tsNode.literal
     return String(lit?.value ?? lit?.raw ?? 'unknown')
   }
 
-  // 可选类型: string | undefined
+  // Optional Types: string | undefined
   if (tsNode.type === 'TSOptionalType') {
     return tsTypeToString((tsNode as any).typeAnnotation, source, offset) + '?'
   }
 
-  // 兜底：从源码切片
+  // Fallback: Slice from source if available
   if (source && tsNode.start != null && tsNode.end != null) {
     return source.slice(tsNode.start - offset, tsNode.end - offset)
   }

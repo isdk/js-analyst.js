@@ -13,7 +13,7 @@ const compat = new FlatCompat({
     allConfig: js.configs.all
 });
 
-export default defineConfig([globalIgnores(["web/**/*", "docs/**/*"]), {
+export default defineConfig([globalIgnores(["web/**/*", "docs/**/*", "coverage/**/*"]), {
     extends: compat.extends("prettier"),
 
     plugins: {
