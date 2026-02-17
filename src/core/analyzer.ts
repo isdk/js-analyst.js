@@ -3,45 +3,49 @@
 // ============================================================
 
 import type {
-  AnalyzerOptions, ParseOptions,
-  VerifySchema, VerifyResult, ParseResult,
-} from '../types.js';
-import { AutoAdapter } from '../parser/auto-adapter.js';
-import { AcornAdapter } from '../parser/acorn-adapter.js';
-import { OxcAdapter } from '../parser/oxc-adapter.js';
-import type { ParserAdapter } from '../parser/adapter.js';
-import { FunctionInfo } from './function-info.js';
-import { findFirst, findAll, isFunctionNode } from '../ast/traverse.js';
-import { detectTypeScript } from '../utils/source.js';
+  AnalyzerOptions,
+  ParseOptions,
+  VerifySchema,
+  VerifyResult,
+  ParseResult,
+  ASTNode,
+} from '../types.js'
+import { AutoAdapter } from '../parser/auto-adapter.js'
+import { AcornAdapter } from '../parser/acorn-adapter.js'
+import { OxcAdapter } from '../parser/oxc-adapter.js'
+import type { ParserAdapter } from '../parser/adapter.js'
+import { FunctionInfo } from './function-info.js'
+import { findAll, isFunctionNode } from '../ast/traverse.js'
+import { detectTypeScript } from '../utils/source.js'
 
 /**
  * 兼容 AutoAdapter 接口的包装
  */
 interface AdapterBridge {
-  warmup(): Promise<void> | void;
-  parseFunctionSource(source: string, options: ParseOptions): ParseResult;
-  getEngineStatus(): { acorn: boolean; oxc: boolean };
+  warmup(): Promise<void> | void
+  parseFunctionSource(source: string, options: ParseOptions): ParseResult
+  getEngineStatus(): { acorn: boolean; oxc: boolean }
 }
 
 export class Analyzer {
-  private readonly _bridge: AdapterBridge;
-  private readonly _options: Required<AnalyzerOptions>;
+  private readonly _bridge: AdapterBridge
+  private readonly _options: Required<AnalyzerOptions>
 
   constructor(options: AnalyzerOptions = {}) {
     this._options = {
       threshold: options.threshold ?? 50 * 1024,
       warmup: options.warmup ?? true,
       engine: options.engine ?? 'auto',
-    };
+    }
 
     if (this._options.engine === 'acorn') {
-      this._bridge = this._wrapSingle(new AcornAdapter());
+      this._bridge = this._wrapSingle(new AcornAdapter())
     } else if (this._options.engine === 'oxc') {
-      this._bridge = this._wrapSingle(new OxcAdapter());
+      this._bridge = this._wrapSingle(new OxcAdapter())
     } else {
-      const auto = new AutoAdapter({ threshold: this._options.threshold });
-      if (this._options.warmup) auto.warmup();
-      this._bridge = this._wrapAuto(auto);
+      const auto = new AutoAdapter({ threshold: this._options.threshold })
+      if (this._options.warmup) auto.warmup()
+      this._bridge = this._wrapAuto(auto)
     }
   }
 
@@ -56,7 +60,7 @@ export class Analyzer {
         acorn: adapter.name === 'acorn' && adapter.ready,
         oxc: adapter.name === 'oxc' && adapter.ready,
       }),
-    };
+    }
   }
 
   private _wrapAuto(auto: AutoAdapter): AdapterBridge {
@@ -68,7 +72,7 @@ export class Analyzer {
         acorn: auto.acorn.ready,
         oxc: auto.oxc.ready,
       }),
-    };
+    }
   }
 
   /**
@@ -77,34 +81,34 @@ export class Analyzer {
   private _tryParse(
     adapter: ParserAdapter,
     source: string,
-    options: ParseOptions,
+    options: ParseOptions
   ): ParseResult {
     const strategies = [
-      { wrap: (s: string) => s,                 offset: 0 },
-      { wrap: (s: string) => `(${s})`,          offset: 1 },
-      { wrap: (s: string) => `({${s}})`,        offset: 2 },
-      { wrap: (s: string) => `(class{${s}})`,   offset: 7 },
-    ];
+      { wrap: (s: string) => s, offset: 0 },
+      { wrap: (s: string) => `(${s})`, offset: 1 },
+      { wrap: (s: string) => `({${s}})`, offset: 2 },
+      { wrap: (s: string) => `(class{${s}})`, offset: 7 },
+    ]
 
-    const errors: Error[] = [];
+    const errors: Error[] = []
 
     for (const { wrap, offset } of strategies) {
       try {
-        const ast = adapter.parse(wrap(source), options);
-        return { ast, offset, engine: adapter.name };
+        const ast = adapter.parse(wrap(source), options)
+        return { ast, offset, engine: adapter.name }
       } catch (e) {
-        errors.push(e as Error);
+        errors.push(e as Error)
       }
     }
 
     const msg = [
       'Failed to parse function source.',
       ...errors.map((e, i) => `  Attempt ${i + 1}: ${e.message}`),
-    ].join('\n');
+    ].join('\n')
 
-    const err = new Error(msg);
-    (err as any).parseErrors = errors;
-    throw err;
+    const err = new Error(msg)
+    ;(err as any).parseErrors = errors
+    throw err
   }
 
   // ============ 公开 API ============
@@ -118,32 +122,34 @@ export class Analyzer {
    * fn.paramCount // 2
    */
   parse(input: string | Function, options: ParseOptions = {}): FunctionInfo {
-    const source = typeof input === 'function' ? input.toString() : String(input);
-    const isTS = options.ts ?? detectTypeScript(source);
+    const source =
+      typeof input === 'function' ? input.toString() : String(input)
+    const isTS = options.ts ?? detectTypeScript(source)
 
-    const { ast, offset, engine } = this._bridge.parseFunctionSource(
-      source,
-      { ...options, ts: isTS, sourceType: options.sourceType ?? 'script' },
-    );
+    const { ast, offset, engine } = this._bridge.parseFunctionSource(source, {
+      ...options,
+      ts: isTS,
+      sourceType: options.sourceType ?? 'script',
+    })
 
-    const nodes = findAll(ast, isFunctionNode);
+    const nodes = findAll(ast, isFunctionNode)
     if (nodes.length === 0) {
-      throw new Error('No function node found in parsed AST');
+      throw new Error('No function node found in parsed AST')
     }
 
-    const seenNodes = new Set<ASTNode>();
+    const seenNodes = new Set<ASTNode>()
     for (const node of nodes) {
-      if (seenNodes.has(node)) continue;
-      const info = new FunctionInfo(node, source, offset, engine);
+      if (seenNodes.has(node)) continue
+      const info = new FunctionInfo(node, source, offset, engine)
       if (info.node !== node) {
-        seenNodes.add(info.node);
+        seenNodes.add(info.node)
       }
       if (this._matchFilters(info, options)) {
-        return info;
+        return info
       }
     }
 
-    throw new Error('No function matches the specified filters');
+    throw new Error('No function matches the specified filters')
   }
 
   /**
@@ -154,41 +160,44 @@ export class Analyzer {
    * fns.forEach(fn => console.log(fn.name));
    */
   parseAll(source: string, options: ParseOptions = {}): FunctionInfo[] {
-    const isTS = options.ts ?? detectTypeScript(source);
+    const isTS = options.ts ?? detectTypeScript(source)
 
-    const { ast, offset, engine } = this._bridge.parseFunctionSource(
-      source,
-      { ...options, ts: isTS, sourceType: options.sourceType ?? 'module' },
-    );
+    const { ast, offset, engine } = this._bridge.parseFunctionSource(source, {
+      ...options,
+      ts: isTS,
+      sourceType: options.sourceType ?? 'module',
+    })
 
-    const nodes = findAll(ast, isFunctionNode);
-    const result: FunctionInfo[] = [];
-    const seenNodes = new Set<ASTNode>();
+    const nodes = findAll(ast, isFunctionNode)
+    const result: FunctionInfo[] = []
+    const seenNodes = new Set<ASTNode>()
 
     for (const node of nodes) {
-      if (seenNodes.has(node)) continue;
-      const info = new FunctionInfo(node, source, offset, engine);
+      if (seenNodes.has(node)) continue
+      const info = new FunctionInfo(node, source, offset, engine)
       if (info.node !== node) {
-        seenNodes.add(info.node);
+        seenNodes.add(info.node)
       }
       if (this._matchFilters(info, options)) {
-        result.push(info);
+        result.push(info)
       }
     }
 
-    return result;
+    return result
   }
 
   private _matchFilters(info: FunctionInfo, options: ParseOptions): boolean {
     if (options.kind) {
-      const kinds = Array.isArray(options.kind) ? options.kind : [options.kind];
-      if (!kinds.includes(info.kind)) return false;
+      const kinds = Array.isArray(options.kind) ? options.kind : [options.kind]
+      if (!kinds.includes(info.kind)) return false
     }
     if (options.syntax) {
-      const syntaxes = Array.isArray(options.syntax) ? options.syntax : [options.syntax];
-      if (!syntaxes.includes(info.syntax)) return false;
+      const syntaxes = Array.isArray(options.syntax)
+        ? options.syntax
+        : [options.syntax]
+      if (!syntaxes.includes(info.syntax)) return false
     }
-    return true;
+    return true
   }
 
   /**
@@ -204,18 +213,18 @@ export class Analyzer {
   verify(
     input: string | Function,
     schema: VerifySchema,
-    parseOptions: ParseOptions = {},
+    parseOptions: ParseOptions = {}
   ): VerifyResult {
-    return this.parse(input, parseOptions).verify(schema);
+    return this.parse(input, parseOptions).verify(schema)
   }
 
   /** 手动预热 WASM */
   async warmup(): Promise<void> {
-    await this._bridge.warmup();
+    await this._bridge.warmup()
   }
 
   /** 当前可用引擎 */
   get engines(): { acorn: boolean; oxc: boolean } {
-    return this._bridge.getEngineStatus();
+    return this._bridge.getEngineStatus()
   }
 }

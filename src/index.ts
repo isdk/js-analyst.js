@@ -1,6 +1,11 @@
-import { Analyzer } from './core/analyzer.js';
-import type { AnalyzerOptions, ParseOptions, VerifySchema, VerifyResult } from './types.js';
-import type { FunctionInfo } from './core/function-info.js';
+import { Analyzer } from './core/analyzer.js'
+import type {
+  AnalyzerOptions,
+  ParseOptions,
+  VerifySchema,
+  VerifyResult,
+} from './types.js'
+import type { FunctionInfo } from './core/function-info.js'
 
 // =================== 工厂函数 ===================
 
@@ -22,18 +27,18 @@ import type { FunctionInfo } from './core/function-info.js';
  * const analyzer = createAnalyzer({ threshold: 100 * 1024 });
  */
 export function createAnalyzer(options?: AnalyzerOptions): Analyzer {
-  return new Analyzer(options);
+  return new Analyzer(options)
 }
 
 // =================== 便捷快速调用 ===================
 
-let _default: Analyzer | null = null;
+let _default: Analyzer | null = null
 
 function getDefault(): Analyzer {
   if (!_default) {
-    _default = new Analyzer({ warmup: true });
+    _default = new Analyzer({ warmup: true })
   }
-  return _default;
+  return _default
 }
 
 /**
@@ -43,15 +48,21 @@ function getDefault(): Analyzer {
  * const fn = parse('(a, b) => a + b');
  * fn.isArrow // true
  */
-export function parse(input: string | Function, options?: ParseOptions): FunctionInfo {
-  return getDefault().parse(input, options);
+export function parse(
+  input: string | Function,
+  options?: ParseOptions
+): FunctionInfo {
+  return getDefault().parse(input, options)
 }
 
 /**
  * 快速解析所有函数
  */
-export function parseAll(source: string, options?: ParseOptions): FunctionInfo[] {
-  return getDefault().parseAll(source, options);
+export function parseAll(
+  source: string,
+  options?: ParseOptions
+): FunctionInfo[] {
+  return getDefault().parseAll(source, options)
 }
 
 /**
@@ -67,35 +78,40 @@ export function parseAll(source: string, options?: ParseOptions): FunctionInfo[]
 export function verify(
   input: string | Function,
   schema: VerifySchema,
-  options?: ParseOptions,
+  options?: ParseOptions
 ): VerifyResult {
-  return getDefault().verify(input, schema, options);
+  return getDefault().verify(input, schema, options)
 }
 
 // =================== 类 & 核心导出 ===================
 
-export { Analyzer } from './core/analyzer.js';
-export { FunctionInfo } from './core/function-info.js';
-export { ParamInfo } from './core/param-info.js';
-export { BodyInfo } from './core/body-info.js';
-export { createVerifier } from './core/verify.js';
+export { Analyzer } from './core/analyzer.js'
+export { FunctionInfo } from './core/function-info.js'
+export { ParamInfo } from './core/param-info.js'
+export { BodyInfo } from './core/body-info.js'
+export { createVerifier } from './core/verify.js'
 
 // =================== 解析器适配器 ===================
 
-export { ParserAdapter } from './parser/adapter.js';
-export { AcornAdapter } from './parser/acorn-adapter.js';
-export { OxcAdapter } from './parser/oxc-adapter.js';
-export { AutoAdapter } from './parser/auto-adapter.js';
+export { ParserAdapter } from './parser/adapter.js'
+export { AcornAdapter } from './parser/acorn-adapter.js'
+export { OxcAdapter } from './parser/oxc-adapter.js'
+export { AutoAdapter } from './parser/auto-adapter.js'
 
 // =================== AST 工具 ===================
 
-export { findFirst, findAll, findInScope, isFunctionNode } from './ast/traverse.js';
-export { query, has } from './ast/query.js';
-export * as helpers from './ast/helpers.js';
+export {
+  findFirst,
+  findAll,
+  findInScope,
+  isFunctionNode,
+} from './ast/traverse.js'
+export { query, has } from './ast/query.js'
+export * as helpers from './ast/helpers.js'
 
 // =================== 工具函数 ===================
 
-export { tsTypeToString } from './utils/ts-type.js';
+export { tsTypeToString } from './utils/ts-type.js'
 export {
   sliceNode,
   sliceBlockBody,
@@ -104,7 +120,7 @@ export {
   byteSize,
   stripComments,
   offsetToLineColumn,
-} from './utils/source.js';
+} from './utils/source.js'
 
 // =================== 类型导出 ===================
 
@@ -146,4 +162,4 @@ export type {
   // JSON
   FunctionInfoJSON,
   ParamInfoJSON,
-} from './types.js';
+} from './types.js'

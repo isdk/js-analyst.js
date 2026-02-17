@@ -1,8 +1,10 @@
 import { defineConfig } from 'tsup'
 import fs from 'node:fs'
 import path from 'node:path'
+import { wasmLoader } from 'esbuild-plugin-wasm'
 
 export default defineConfig({
+  esbuildPlugins: [wasmLoader()],
   entry: ['src/index.ts'],
   format: ['cjs', 'esm'],
   // Inject cjs and esm shims:https://tsup.egoist.dev/#inject-cjs-and-esm-shims

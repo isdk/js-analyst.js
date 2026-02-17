@@ -152,6 +152,20 @@ describe('Verify - body', () => {
     expect(r.passed).toBe(true);
   });
 
+  it('return member access', () => {
+    const r = analyzer.verify('function foo(obj) { return obj.prop }', {
+      body: { returns: (ret) => ret.isMemberAccess('obj', 'prop') },
+    });
+    expect(r.passed).toBe(true);
+  });
+
+  it('return template literal', () => {
+    const r = analyzer.verify('function foo(x) { return `hello ${x}` }', {
+      body: { returns: (ret) => ret.isTemplateLiteral() },
+    });
+    expect(r.passed).toBe(true);
+  });
+
   it('body custom', () => {
     const r = analyzer.verify('function foo() { a(); b(); return 1 }', {
       body: { custom: (body) => body.statementCount <= 5 },
@@ -228,15 +242,33 @@ describe('Verify - failure summary', () => {
     const r = analyzer.verify('function foo(a) { return a }', {
       name: 'bar',
       paramCount: 2,
-      body: { returns: (ret) => ret.isLiteral(42) },
+      body: { 
+        returns: (ret) => ret.isLiteral(42),
+        has: 'AwaitExpression',
+        custom: () => false,
+      },
+      params: [{ name: 'x' }],
+      custom: () => { throw new Error('custom error'); }
     });
     expect(r.passed).toBe(false);
-    expect(r.failures.length).toBeGreaterThanOrEqual(2);
+    expect(r.failures.length).toBeGreaterThanOrEqual(4);
     expect(r.summary).toContain('failed');
 
     for (const f of r.failures) {
       expect(f.path).toBeTruthy();
       expect(f.message).toBeTruthy();
     }
+  });
+
+  it('fails with regex matcher', () => {
+    const r = analyzer.verify('function foo() {}', { name: /bar/ });
+    expect(r.passed).toBe(false);
+  });
+
+  it('fails with custom predicate throwing error', () => {
+    const r = analyzer.verify('function foo() {}', { 
+      name: () => { throw new Error('fail'); } 
+    });
+    expect(r.passed).toBe(false);
   });
 });

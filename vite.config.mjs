@@ -1,11 +1,15 @@
 import path from 'path'
+import wasm from "vite-plugin-wasm"
 import { defineConfig } from 'vite'
 import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
-  plugins: [tsconfigPaths({
-    projects: ['./tsconfig.spec.json'],
-  })],
+  plugins: [
+    tsconfigPaths({
+      projects: ['./tsconfig.spec.json'],
+    }),
+    wasm(),
+  ],
   test: {
     include: ['src/**/*.spec.ts', 'src/**/*.test.ts', 'test/**/*.spec.ts', 'test/**/*.test.ts'],
     testTimeout: 80000,

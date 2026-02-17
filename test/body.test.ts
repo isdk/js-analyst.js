@@ -10,6 +10,15 @@ describe('Body analysis', () => {
     expect(fn.body.isBlock).toBe(true);
     expect(fn.body.statementCount).toBe(0);
     expect(fn.body.returns).toHaveLength(0);
+    expect(fn.body.isEmpty).toBe(false); // {} is not empty body (EmptyBody type)
+  });
+
+  it('real empty body (TS declaration)', () => {
+    const fn = analyzer.parse('declare function foo();', { ts: true });
+    expect(fn.body.isEmpty).toBe(true);
+    expect(fn.body.returns).toHaveLength(0);
+    expect(fn.body.text).toBeNull();
+    expect(fn.body.statements).toHaveLength(0);
   });
 
   it('single return', () => {

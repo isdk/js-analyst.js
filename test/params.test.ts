@@ -108,6 +108,12 @@ describe('TS params', () => {
     expect(fn.param(1)?.type).toBe('Options');
   });
 
+  it('destructured with type', () => {
+    const fn = analyzer.parse('function foo({ name }: User) {}', { ts: true });
+    expect(fn.param(0)?.isDestructured).toBe(true);
+    expect(fn.param(0)?.type).toBe('User');
+  });
+
   it('auto-detect TS', () => {
     const fn = analyzer.parse(tsBasic.typed); // 不传 ts: true
     expect(fn.param(0)?.type).toBe('number');
