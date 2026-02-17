@@ -1,6 +1,6 @@
 {
   "name": "@isdk/js-analyst",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Lightweight JavaScript/TypeScript analysis library with hybrid JS/WASM parsing",
   "keywords": [
     "function",
