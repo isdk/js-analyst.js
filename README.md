@@ -45,9 +45,25 @@ const analyzer = createAnalyzer({ engine: 'oxc' });
 const result = analyzer.parse('export async function* myGen(a: number = 1) {}');
 ```
 
-### 2. Semantic Snippet Matching
+### 2. Magic Snippet Matching (Power of Semantic)
 
-// ... (existing snippet content) ...
+This is the most powerful way to verify code. Use a **fuzzy code template** to match a **concrete implementation**. The engine automatically ignores irrelevant naming differences, spacing, brackets, or declaration styles.
+
+```typescript
+import { verify } from '@isdk/js-analyst';
+
+// Actual code: uses specific names, TS types, and arrow syntax
+const code = 'const add = (a: number, b: number): number => (a + b)';
+
+// Validation pattern:
+// - Uses args[0], args[1] to ignore actual parameter names
+// - Uses :any to wildcard the type constraints
+// - Matches even though it's written as a standard function declaration
+const pattern = 'function _(args[0]: any, args[1]: any) { return args[0] + args[1] }';
+
+const result = verify(code, pattern);
+console.log(result.passed); // ✅ true
+```
 
 ---
 
@@ -193,7 +209,14 @@ analyzer.verify(code, {
 
 ## Semantic Equivalence
 
-// ... (existing semantic content) ...
+The engine automatically ignores non-semantic differences (unless `strict: true`):
+
+- **Wrapping**: `return (a + b)` ≡ `return a + b`; `ExpressionStatement` ≡ `Expression`.
+- **Implicit Returns**: `() => x` ≡ `{ return x }`.
+- **Declaration Kinds**: `const x = 1` ≡ `let x = 1` ≡ `var x = 1`.
+- **Property Shorthand**: `{ x }` ≡ `{ x: x }`.
+- **Literal Normalization**: `255` ≡ `0xff` ≡ `0b11111111`.
+- **TS Wildcards**: `Promise<any>` matches `Promise<string>` or `Promise<User>`.
 
 ---
 
@@ -208,15 +231,6 @@ The library exports several low-level utilities for manual AST or source process
 | `offsetToLineColumn(code, offset)` | Convert character offset to `{ line, column }`. |
 | `findInScope(node, test)` | Find nodes while respecting function scope boundaries. |
 | `tsTypeToString(typeNode)` | Normalize TS type nodes to string representation. |
-
-The engine automatically ignores non-semantic differences (unless `strict: true`):
-
-- **Wrapping**: `return (a + b)` ≡ `return a + b`; `ExpressionStatement` ≡ `Expression`.
-- **Implicit Returns**: `() => x` ≡ `{ return x }`.
-- **Declaration Kinds**: `const x = 1` ≡ `let x = 1` ≡ `var x = 1`.
-- **Property Shorthand**: `{ x }` ≡ `{ x: x }`.
-- **Literal Normalization**: `255` ≡ `0xff` ≡ `0b11111111`.
-- **TS Wildcards**: `Promise<any>` matches `Promise<string>` or `Promise<User>`.
 
 ---
 

@@ -45,9 +45,25 @@ const analyzer = createAnalyzer({ engine: 'oxc' });
 const result = analyzer.parse('export async function* myGen(a: number = 1) {}');
 ```
 
-### 2. 全函数语义匹配 (Snippet Schema)
+### 2. 语义匹配的威力 (Magic Snippets)
 
-// ... (existing snippet content) ...
+这是最强大的验证方式。你可以用一个**模糊的代码模板**去验证一个**具体的实现**，引擎会自动忽略无关的命名差异、空格、括号或声明方式。
+
+```typescript
+import { verify } from '@isdk/js-analyst';
+
+// 实际代码：变量名是 a/b，包含 TS 类型，且是箭头函数
+const code = 'const add = (a: number, b: number): number => (a + b)';
+
+// 验证模式：
+// - 使用 args[0], args[1] 忽略实际变量名
+// - 使用 :any 忽略或通配类型限制
+// - 即使模式写的是 function 声明，也能匹配 code 里的箭头函数
+const pattern = 'function _(args[0]: any, args[1]: any) { return args[0] + args[1] }';
+
+const result = verify(code, pattern);
+console.log(result.passed); // ✅ true
+```
 
 ---
 
@@ -191,7 +207,14 @@ analyzer.verify(code, {
 
 ## 语义等价性
 
-// ... (existing semantic content) ...
+验证引擎在匹配时会自动忽略以下非语义差异（除非开启 `strict: true`）：
+
+- **包装解包**：`return (a + b)` ≡ `return a + b`；`ExpressionStatement` ≡ `Expression`。
+- **控制流等价**：隐式返回 `() => x` ≡ 显式返回 `{ return x }`。
+- **声明类型**：`const x = 1` ≡ `let x = 1` ≡ `var x = 1`。
+- **属性简写**：`{ x }` ≡ `{ x: x }`。
+- **字面量归一化**：`255` ≡ `0xff` ≡ `0b11111111`。
+- **TS 类型模糊匹配**：`Promise<any>` 能够匹配 `Promise<string>` 或 `Promise<User>`。
 
 ---
 
@@ -206,15 +229,6 @@ analyzer.verify(code, {
 | `offsetToLineColumn(code, offset)` | 将字符偏移量转换为 `{ line, column }`。 |
 | `findInScope(node, test)` | 在尊重函数作用域边界的情况下查找节点。 |
 | `tsTypeToString(typeNode)` | 将 TS 类型节点标准化为字符串表示。 |
-
-验证引擎在匹配时会自动忽略以下非语义差异（除非开启 `strict: true`）：
-
-- **包装解包**：`return (a + b)` ≡ `return a + b`；`ExpressionStatement` ≡ `Expression`。
-- **控制流等价**：隐式返回 `() => x` ≡ 显式返回 `{ return x }`。
-- **声明类型**：`const x = 1` ≡ `let x = 1` ≡ `var x = 1`。
-- **属性简写**：`{ x }` ≡ `{ x: x }`。
-- **字面量归一化**：`255` ≡ `0xff` ≡ `0b11111111`。
-- **TS 类型模糊匹配**：`Promise<any>` 能够匹配 `Promise<string>` 或 `Promise<User>`。
 
 ---
 
