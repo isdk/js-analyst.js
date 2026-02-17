@@ -6,7 +6,7 @@
 
 # Class: Analyzer
 
-Defined in: [core/analyzer.ts:37](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/analyzer.ts#L37)
+Defined in: [core/analyzer.ts:37](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/analyzer.ts#L37)
 
 The primary class for analyzing JavaScript and TypeScript code.
 
@@ -20,7 +20,7 @@ and validating function metadata.
 
 > **new Analyzer**(`options`): `Analyzer`
 
-Defined in: [core/analyzer.ts:46](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/analyzer.ts#L46)
+Defined in: [core/analyzer.ts:46](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/analyzer.ts#L46)
 
 Creates a new Analyzer instance.
 
@@ -44,7 +44,7 @@ Configuration options for the analyzer.
 
 > **get** **engines**(): `object`
 
-Defined in: [core/analyzer.ts:255](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/analyzer.ts#L255)
+Defined in: [core/analyzer.ts:255](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/analyzer.ts#L255)
 
 Gets the status of available parsing engines.
 
@@ -66,7 +66,7 @@ Gets the status of available parsing engines.
 
 > **parse**(`input`, `options`): [`FunctionInfo`](FunctionInfo.md)
 
-Defined in: [core/analyzer.ts:144](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/analyzer.ts#L144)
+Defined in: [core/analyzer.ts:144](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/analyzer.ts#L144)
 
 Parses the input source and returns the first matching function.
 
@@ -109,7 +109,7 @@ console.log(fn.paramCount); // 2
 
 > **parseAll**(`source`, `options`): [`FunctionInfo`](FunctionInfo.md)[]
 
-Defined in: [core/analyzer.ts:188](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/analyzer.ts#L188)
+Defined in: [core/analyzer.ts:188](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/analyzer.ts#L188)
 
 Parses all functions found within the provided source code.
 
@@ -146,7 +146,7 @@ fns.forEach(fn => console.log(fn.name));
 
 > **verify**(`input`, `schema`, `parseOptions`): [`VerifyResult`](../interfaces/VerifyResult.md)
 
-Defined in: [core/analyzer.ts:237](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/analyzer.ts#L237)
+Defined in: [core/analyzer.ts:237](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/analyzer.ts#L237)
 
 Parses and immediately verifies a function against a schema.
 
@@ -182,7 +182,7 @@ The verification result.
 
 > **warmup**(): `Promise`\<`void`\>
 
-Defined in: [core/analyzer.ts:248](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/analyzer.ts#L248)
+Defined in: [core/analyzer.ts:248](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/analyzer.ts#L248)
 
 Manually warms up the WASM-based parser (OXC).
 

@@ -6,7 +6,7 @@
 
 # Interface: ParamSchema
 
-Defined in: [types.ts:325](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L325)
+Defined in: [types.ts:325](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L325)
 
 Schema for verifying a function parameter.
 
@@ -16,7 +16,7 @@ Schema for verifying a function parameter.
 
 > `optional` **hasDefault**: `boolean`
 
-Defined in: [types.ts:331](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L331)
+Defined in: [types.ts:331](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L331)
 
 Whether the parameter has a default value.
 
@@ -26,7 +26,7 @@ Whether the parameter has a default value.
 
 > `optional` **isDestructured**: `boolean`
 
-Defined in: [types.ts:335](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L335)
+Defined in: [types.ts:335](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L335)
 
 Whether the parameter uses destructuring (object or array).
 
@@ -36,7 +36,7 @@ Whether the parameter uses destructuring (object or array).
 
 > `optional` **isRest**: `boolean`
 
-Defined in: [types.ts:333](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L333)
+Defined in: [types.ts:333](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L333)
 
 Whether the parameter is a rest element (...args).
 
@@ -46,7 +46,7 @@ Whether the parameter is a rest element (...args).
 
 > `optional` **name**: [`Matcher`](../type-aliases/Matcher.md)\<`string` \| `null`\>
 
-Defined in: [types.ts:327](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L327)
+Defined in: [types.ts:327](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L327)
 
 Matcher for the parameter name.
 
@@ -56,7 +56,7 @@ Matcher for the parameter name.
 
 > `optional` **pattern**: `"object"` \| `"array"` \| `null`
 
-Defined in: [types.ts:337](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L337)
+Defined in: [types.ts:337](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L337)
 
 The destructuring pattern type.
 
@@ -66,6 +66,6 @@ The destructuring pattern type.
 
 > `optional` **type**: [`Matcher`](../type-aliases/Matcher.md)\<`string` \| `null`\>
 
-Defined in: [types.ts:329](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L329)
+Defined in: [types.ts:329](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L329)
 
 Matcher for the parameter's TypeScript type (string representation).

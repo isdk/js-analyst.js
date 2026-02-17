@@ -8,7 +8,7 @@
 
 > **stripComments**(`source`): `string`
 
-Defined in: [utils/source.ts:113](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/utils/source.ts#L113)
+Defined in: [utils/source.ts:113](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/utils/source.ts#L113)
 
 Removes single-line and multi-line comments from the source code.
 Note: This is a simplified version that does not handle comments

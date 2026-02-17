@@ -6,7 +6,7 @@
 
 # Interface: IReturnHelper
 
-Defined in: [types.ts:535](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L535)
+Defined in: [types.ts:535](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L535)
 
 Helper interface for verifying return values in a function body.
 
@@ -16,7 +16,7 @@ Helper interface for verifying return values in a function body.
 
 > `readonly` **node**: [`ASTNode`](ASTNode.md) \| `null`
 
-Defined in: [types.ts:537](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L537)
+Defined in: [types.ts:537](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L537)
 
 The AST node being returned.
 
@@ -26,7 +26,7 @@ The AST node being returned.
 
 > **isBinaryOp**(`operator`, `leftName`, `rightName`): `boolean`
 
-Defined in: [types.ts:539](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L539)
+Defined in: [types.ts:539](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L539)
 
 Checks if the return value is a binary operation with the given operator and operand names.
 
@@ -54,7 +54,7 @@ Checks if the return value is a binary operation with the given operator and ope
 
 > **isCall**(`calleeName?`): `boolean`
 
-Defined in: [types.ts:541](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L541)
+Defined in: [types.ts:541](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L541)
 
 Checks if the return value is a call to a specific function.
 
@@ -74,7 +74,7 @@ Checks if the return value is a call to a specific function.
 
 > **isIdentifier**(`name?`): `boolean`
 
-Defined in: [types.ts:545](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L545)
+Defined in: [types.ts:545](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L545)
 
 Checks if the return value is a specific identifier.
 
@@ -94,7 +94,7 @@ Checks if the return value is a specific identifier.
 
 > **isLiteral**(`value?`): `boolean`
 
-Defined in: [types.ts:543](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L543)
+Defined in: [types.ts:543](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L543)
 
 Checks if the return value is a specific literal value.
 
@@ -114,7 +114,7 @@ Checks if the return value is a specific literal value.
 
 > **isMemberAccess**(`objName`, `propName`): `boolean`
 
-Defined in: [types.ts:547](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L547)
+Defined in: [types.ts:547](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L547)
 
 Checks if the return value is a member access (e.g., obj.prop).
 
@@ -138,7 +138,7 @@ Checks if the return value is a member access (e.g., obj.prop).
 
 > **isTemplateLiteral**(): `boolean`
 
-Defined in: [types.ts:549](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L549)
+Defined in: [types.ts:549](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L549)
 
 Checks if the return value is a template literal.
 

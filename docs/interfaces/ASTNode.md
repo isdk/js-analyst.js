@@ -6,7 +6,7 @@
 
 # Interface: ASTNode
 
-Defined in: [types.ts:13](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L13)
+Defined in: [types.ts:13](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L13)
 
 Represents a base ESTree AST node.
 
@@ -36,7 +36,7 @@ Additional parser-specific extension properties.
 
 > `optional` **end**: `number`
 
-Defined in: [types.ts:19](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L19)
+Defined in: [types.ts:19](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L19)
 
 The 0-based character offset where the node ends.
 
@@ -46,7 +46,7 @@ The 0-based character offset where the node ends.
 
 > `optional` **loc**: [`SourceLocation`](SourceLocation.md)
 
-Defined in: [types.ts:21](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L21)
+Defined in: [types.ts:21](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L21)
 
 Detailed line and column information for the node's location in source.
 
@@ -56,7 +56,7 @@ Detailed line and column information for the node's location in source.
 
 > `optional` **range**: \[`number`, `number`\]
 
-Defined in: [types.ts:23](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L23)
+Defined in: [types.ts:23](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L23)
 
 The [start, end] character range offsets of the node.
 
@@ -66,7 +66,7 @@ The [start, end] character range offsets of the node.
 
 > `optional` **start**: `number`
 
-Defined in: [types.ts:17](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L17)
+Defined in: [types.ts:17](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L17)
 
 The 0-based character offset where the node starts.
 
@@ -76,6 +76,6 @@ The 0-based character offset where the node starts.
 
 > **type**: `string`
 
-Defined in: [types.ts:15](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L15)
+Defined in: [types.ts:15](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L15)
 
 The type of the AST node (e.g., 'Identifier', 'FunctionDeclaration').

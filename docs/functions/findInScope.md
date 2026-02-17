@@ -8,7 +8,7 @@
 
 > **findInScope**(`node`, `predicate`, `owner`, `results`): [`ASTNode`](../interfaces/ASTNode.md)[]
 
-Defined in: [ast/traverse.ts:80](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/ast/traverse.ts#L80)
+Defined in: [ast/traverse.ts:80](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/ast/traverse.ts#L80)
 
 Traverses the AST within the current function's scope.
 It stops descending when it encounters a nested function definition.

@@ -8,7 +8,7 @@
 
 > **findAll**(`node`, `predicate`, `results`): [`ASTNode`](../interfaces/ASTNode.md)[]
 
-Defined in: [ast/traverse.ts:47](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/ast/traverse.ts#L47)
+Defined in: [ast/traverse.ts:47](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/ast/traverse.ts#L47)
 
 Traverses the AST and returns all nodes that match the predicate.
 

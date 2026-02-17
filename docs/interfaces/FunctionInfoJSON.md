@@ -6,7 +6,7 @@
 
 # Interface: FunctionInfoJSON
 
-Defined in: [types.ts:570](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L570)
+Defined in: [types.ts:570](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L570)
 
 Plain JSON representation of function information.
 
@@ -16,7 +16,7 @@ Plain JSON representation of function information.
 
 > **arrow**: `boolean`
 
-Defined in: [types.ts:578](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L578)
+Defined in: [types.ts:578](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L578)
 
 ***
 
@@ -24,7 +24,7 @@ Defined in: [types.ts:578](https://github.com/isdk/js-analyst.js/blob/4edf421876
 
 > **async**: `boolean`
 
-Defined in: [types.ts:576](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L576)
+Defined in: [types.ts:576](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L576)
 
 ***
 
@@ -32,7 +32,7 @@ Defined in: [types.ts:576](https://github.com/isdk/js-analyst.js/blob/4edf421876
 
 > **body**: `string` \| `null`
 
-Defined in: [types.ts:581](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L581)
+Defined in: [types.ts:581](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L581)
 
 ***
 
@@ -40,7 +40,7 @@ Defined in: [types.ts:581](https://github.com/isdk/js-analyst.js/blob/4edf421876
 
 > **bodyType**: `"expression"` \| `"block"`
 
-Defined in: [types.ts:582](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L582)
+Defined in: [types.ts:582](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L582)
 
 ***
 
@@ -48,7 +48,7 @@ Defined in: [types.ts:582](https://github.com/isdk/js-analyst.js/blob/4edf421876
 
 > **engine**: `string`
 
-Defined in: [types.ts:584](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L584)
+Defined in: [types.ts:584](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L584)
 
 ***
 
@@ -56,7 +56,7 @@ Defined in: [types.ts:584](https://github.com/isdk/js-analyst.js/blob/4edf421876
 
 > **generator**: `boolean`
 
-Defined in: [types.ts:577](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L577)
+Defined in: [types.ts:577](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L577)
 
 ***
 
@@ -64,7 +64,7 @@ Defined in: [types.ts:577](https://github.com/isdk/js-analyst.js/blob/4edf421876
 
 > **kind**: `FunctionKind`
 
-Defined in: [types.ts:572](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L572)
+Defined in: [types.ts:572](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L572)
 
 ***
 
@@ -72,7 +72,7 @@ Defined in: [types.ts:572](https://github.com/isdk/js-analyst.js/blob/4edf421876
 
 > **name**: `string` \| `null`
 
-Defined in: [types.ts:571](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L571)
+Defined in: [types.ts:571](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L571)
 
 ***
 
@@ -80,7 +80,7 @@ Defined in: [types.ts:571](https://github.com/isdk/js-analyst.js/blob/4edf421876
 
 > **params**: [`ParamInfoJSON`](ParamInfoJSON.md)[]
 
-Defined in: [types.ts:579](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L579)
+Defined in: [types.ts:579](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L579)
 
 ***
 
@@ -88,7 +88,7 @@ Defined in: [types.ts:579](https://github.com/isdk/js-analyst.js/blob/4edf421876
 
 > **returnType**: `string` \| `null`
 
-Defined in: [types.ts:580](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L580)
+Defined in: [types.ts:580](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L580)
 
 ***
 
@@ -96,7 +96,7 @@ Defined in: [types.ts:580](https://github.com/isdk/js-analyst.js/blob/4edf421876
 
 > **statementCount**: `number`
 
-Defined in: [types.ts:583](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L583)
+Defined in: [types.ts:583](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L583)
 
 ***
 
@@ -104,7 +104,7 @@ Defined in: [types.ts:583](https://github.com/isdk/js-analyst.js/blob/4edf421876
 
 > **static**: `boolean`
 
-Defined in: [types.ts:574](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L574)
+Defined in: [types.ts:574](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L574)
 
 ***
 
@@ -112,7 +112,7 @@ Defined in: [types.ts:574](https://github.com/isdk/js-analyst.js/blob/4edf421876
 
 > **syntax**: `FunctionSyntax`
 
-Defined in: [types.ts:573](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L573)
+Defined in: [types.ts:573](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L573)
 
 ***
 
@@ -120,4 +120,4 @@ Defined in: [types.ts:573](https://github.com/isdk/js-analyst.js/blob/4edf421876
 
 > **type**: `string`
 
-Defined in: [types.ts:575](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L575)
+Defined in: [types.ts:575](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L575)

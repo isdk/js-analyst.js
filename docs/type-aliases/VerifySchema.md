@@ -8,7 +8,7 @@
 
 > **VerifySchema** = \{ `arrow?`: `boolean`; `async?`: `boolean`; `body?`: `string` \| `string`[] \| [`BodySchema`](../interfaces/BodySchema.md); `custom?`: (`fn`) => `boolean`; `generator?`: `boolean`; `kind?`: [`Matcher`](Matcher.md)\<`FunctionKind`\>; `name?`: [`Matcher`](Matcher.md)\<`string` \| `null`\>; `paramCount?`: [`Matcher`](Matcher.md)\<`number`\>; `params?`: [`ParamSchema`](../interfaces/ParamSchema.md)[]; `returns?`: [`BodySchema`](../interfaces/BodySchema.md)\[`"returns"`\]; `returnType?`: [`Matcher`](Matcher.md)\<`string` \| `null`\>; `static?`: `boolean`; `strict?`: `boolean`; `syntax?`: [`Matcher`](Matcher.md)\<`FunctionSyntax`\>; \} \| `string`
 
-Defined in: [types.ts:364](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L364)
+Defined in: [types.ts:364](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L364)
 
 Comprehensive schema for verifying a function.
 Can be a structured object or a JS/TS snippet string.

@@ -8,7 +8,7 @@
 
 > **query**(`root`, `selector`, `scoped`, `owner?`): [`ASTNode`](../interfaces/ASTNode.md)[]
 
-Defined in: [ast/query.ts:76](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/ast/query.ts#L76)
+Defined in: [ast/query.ts:76](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/ast/query.ts#L76)
 
 Queries the AST for all nodes matching the given selector.
 

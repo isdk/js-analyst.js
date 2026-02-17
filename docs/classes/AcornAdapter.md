@@ -6,7 +6,7 @@
 
 # Class: AcornAdapter
 
-Defined in: [parser/acorn-adapter.ts:16](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/parser/acorn-adapter.ts#L16)
+Defined in: [parser/acorn-adapter.ts:16](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/parser/acorn-adapter.ts#L16)
 
 Parser adapter for the Acorn engine.
 
@@ -23,7 +23,7 @@ provide standard-compliant JavaScript and TypeScript parsing.
 
 > **new AcornAdapter**(): `AcornAdapter`
 
-Defined in: [parser/acorn-adapter.ts:20](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/parser/acorn-adapter.ts#L20)
+Defined in: [parser/acorn-adapter.ts:20](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/parser/acorn-adapter.ts#L20)
 
 #### Returns
 
@@ -39,7 +39,7 @@ Defined in: [parser/acorn-adapter.ts:20](https://github.com/isdk/js-analyst.js/b
 
 > `readonly` **name**: [`EngineName`](../type-aliases/EngineName.md)
 
-Defined in: [parser/adapter.ts:15](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/parser/adapter.ts#L15)
+Defined in: [parser/adapter.ts:15](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/parser/adapter.ts#L15)
 
 The name of the parsing engine.
 
@@ -53,7 +53,7 @@ The name of the parsing engine.
 
 > **ready**: `boolean`
 
-Defined in: [parser/adapter.ts:17](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/parser/adapter.ts#L17)
+Defined in: [parser/adapter.ts:17](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/parser/adapter.ts#L17)
 
 Whether the parser is initialized and ready to use.
 
@@ -67,7 +67,7 @@ Whether the parser is initialized and ready to use.
 
 > **init**(): `Promise`\<`void`\>
 
-Defined in: [parser/adapter.ts:31](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/parser/adapter.ts#L31)
+Defined in: [parser/adapter.ts:31](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/parser/adapter.ts#L31)
 
 Asynchronously initializes the parser.
 Necessary for WASM-based parsers like OXC.
@@ -86,7 +86,7 @@ Necessary for WASM-based parsers like OXC.
 
 > **initSync**(): `void`
 
-Defined in: [parser/adapter.ts:39](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/parser/adapter.ts#L39)
+Defined in: [parser/adapter.ts:39](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/parser/adapter.ts#L39)
 
 Synchronously initializes the parser.
 Used for pure JavaScript parsers like Acorn.
@@ -105,7 +105,7 @@ Used for pure JavaScript parsers like Acorn.
 
 > **parse**(`source`, `options`): [`ASTNode`](../interfaces/ASTNode.md)
 
-Defined in: [parser/acorn-adapter.ts:33](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/parser/acorn-adapter.ts#L33)
+Defined in: [parser/acorn-adapter.ts:33](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/parser/acorn-adapter.ts#L33)
 
 Parses the source using Acorn.
 

@@ -6,7 +6,7 @@
 
 # Class: ParamInfo
 
-Defined in: [core/param-info.ts:36](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/param-info.ts#L36)
+Defined in: [core/param-info.ts:36](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/param-info.ts#L36)
 
 Implementation of [IParamInfo](../interfaces/IParamInfo.md) that provides metadata about
 a function parameter.
@@ -24,7 +24,7 @@ rest elements, default values, and destructuring (objects/arrays).
 
 > **new ParamInfo**(`node`, `source`, `offset`): `ParamInfo`
 
-Defined in: [core/param-info.ts:50](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/param-info.ts#L50)
+Defined in: [core/param-info.ts:50](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/param-info.ts#L50)
 
 **`Internal`**
 
@@ -62,7 +62,7 @@ The character offset used during parsing.
 
 > **get** **defaultNode**(): [`ASTNode`](../interfaces/ASTNode.md) \| `null`
 
-Defined in: [core/param-info.ts:164](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/param-info.ts#L164)
+Defined in: [core/param-info.ts:164](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/param-info.ts#L164)
 
 The AST node representing the default value, if any.
 
@@ -84,7 +84,7 @@ The AST node representing the default value, if any.
 
 > **get** **hasDefault**(): `boolean`
 
-Defined in: [core/param-info.ts:144](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/param-info.ts#L144)
+Defined in: [core/param-info.ts:144](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/param-info.ts#L144)
 
 Whether the parameter has a default value (AssignmentPattern).
 
@@ -106,7 +106,7 @@ Whether the parameter has a default value.
 
 > **get** **isDestructured**(): `boolean`
 
-Defined in: [core/param-info.ts:154](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/param-info.ts#L154)
+Defined in: [core/param-info.ts:154](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/param-info.ts#L154)
 
 Whether the parameter uses object or array destructuring.
 
@@ -128,7 +128,7 @@ Whether the parameter uses destructuring.
 
 > **get** **isRest**(): `boolean`
 
-Defined in: [core/param-info.ts:149](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/param-info.ts#L149)
+Defined in: [core/param-info.ts:149](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/param-info.ts#L149)
 
 Whether the parameter is a rest element (e.g., ...args).
 
@@ -150,7 +150,7 @@ Whether this is a rest parameter (...args).
 
 > **get** **name**(): `string` \| `null`
 
-Defined in: [core/param-info.ts:131](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/param-info.ts#L131)
+Defined in: [core/param-info.ts:131](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/param-info.ts#L131)
 
 The name of the parameter.
 Returns null if the parameter is a destructuring pattern without a simple name.
@@ -173,7 +173,7 @@ The parameter name, or null if it's a destructured pattern without a simple iden
 
 > **get** **pattern**(): `"object"` \| `"array"` \| `null`
 
-Defined in: [core/param-info.ts:159](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/param-info.ts#L159)
+Defined in: [core/param-info.ts:159](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/param-info.ts#L159)
 
 The specific destructuring pattern used ('object' or 'array').
 
@@ -195,7 +195,7 @@ The type of destructuring pattern used.
 
 > **get** **text**(): `string` \| `null`
 
-Defined in: [core/param-info.ts:169](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/param-info.ts#L169)
+Defined in: [core/param-info.ts:169](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/param-info.ts#L169)
 
 The raw source text of the parameter.
 
@@ -217,7 +217,7 @@ The raw source text of the parameter.
 
 > **get** **type**(): `string` \| `null`
 
-Defined in: [core/param-info.ts:139](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/param-info.ts#L139)
+Defined in: [core/param-info.ts:139](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/param-info.ts#L139)
 
 The string representation of the TypeScript type annotation.
 Returns null if no type is explicitly defined.
@@ -238,7 +238,7 @@ The string representation of the parameter's TypeScript type.
 
 > **toJSON**(): [`ParamInfoJSON`](../interfaces/ParamInfoJSON.md)
 
-Defined in: [core/param-info.ts:174](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/param-info.ts#L174)
+Defined in: [core/param-info.ts:174](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/param-info.ts#L174)
 
 Serializes the parameter info to a plain JSON object.
 

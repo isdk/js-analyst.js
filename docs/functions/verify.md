@@ -8,7 +8,7 @@
 
 > **verify**(`input`, `schema`, `options?`): [`VerifyResult`](../interfaces/VerifyResult.md)
 
-Defined in: [index.ts:106](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/index.ts#L106)
+Defined in: [index.ts:106](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/index.ts#L106)
 
 Quickly verifies a function against a schema using a default singleton analyzer.
 

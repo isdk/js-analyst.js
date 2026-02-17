@@ -6,7 +6,7 @@
 
 # Interface: FunctionNode
 
-Defined in: [types.ts:64](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L64)
+Defined in: [types.ts:64](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L64)
 
 Represents a function-related node (Declaration, Expression, or Arrow).
 
@@ -26,7 +26,7 @@ Additional parser-specific extension properties.
 
 > **async**: `boolean`
 
-Defined in: [types.ts:73](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L73)
+Defined in: [types.ts:73](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L73)
 
 Whether the function is marked as async.
 
@@ -36,7 +36,7 @@ Whether the function is marked as async.
 
 > **body**: [`ASTNode`](ASTNode.md)
 
-Defined in: [types.ts:71](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L71)
+Defined in: [types.ts:71](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L71)
 
 The body of the function (BlockStatement or an Expression for arrows).
 
@@ -46,7 +46,7 @@ The body of the function (BlockStatement or an Expression for arrows).
 
 > `optional` **end**: `number`
 
-Defined in: [types.ts:19](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L19)
+Defined in: [types.ts:19](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L19)
 
 The 0-based character offset where the node ends.
 
@@ -60,7 +60,7 @@ The 0-based character offset where the node ends.
 
 > `optional` **expression**: `boolean`
 
-Defined in: [types.ts:77](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L77)
+Defined in: [types.ts:77](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L77)
 
 Whether the function is an arrow function with an expression body.
 
@@ -70,7 +70,7 @@ Whether the function is an arrow function with an expression body.
 
 > **generator**: `boolean`
 
-Defined in: [types.ts:75](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L75)
+Defined in: [types.ts:75](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L75)
 
 Whether the function is a generator function.
 
@@ -80,7 +80,7 @@ Whether the function is a generator function.
 
 > `optional` **id**: [`Identifier`](Identifier.md) \| `null`
 
-Defined in: [types.ts:67](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L67)
+Defined in: [types.ts:67](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L67)
 
 The identifier of the function, or null if anonymous.
 
@@ -90,7 +90,7 @@ The identifier of the function, or null if anonymous.
 
 > `optional` **loc**: [`SourceLocation`](SourceLocation.md)
 
-Defined in: [types.ts:21](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L21)
+Defined in: [types.ts:21](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L21)
 
 Detailed line and column information for the node's location in source.
 
@@ -104,7 +104,7 @@ Detailed line and column information for the node's location in source.
 
 > **params**: [`ASTNode`](ASTNode.md)[]
 
-Defined in: [types.ts:69](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L69)
+Defined in: [types.ts:69](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L69)
 
 The list of function parameters.
 
@@ -114,7 +114,7 @@ The list of function parameters.
 
 > `optional` **range**: \[`number`, `number`\]
 
-Defined in: [types.ts:23](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L23)
+Defined in: [types.ts:23](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L23)
 
 The [start, end] character range offsets of the node.
 
@@ -128,7 +128,7 @@ The [start, end] character range offsets of the node.
 
 > `optional` **returnType**: `TSTypeAnnotationWrapper`
 
-Defined in: [types.ts:79](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L79)
+Defined in: [types.ts:79](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L79)
 
 Optional TypeScript return type annotation.
 
@@ -138,7 +138,7 @@ Optional TypeScript return type annotation.
 
 > `optional` **start**: `number`
 
-Defined in: [types.ts:17](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L17)
+Defined in: [types.ts:17](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L17)
 
 The 0-based character offset where the node starts.
 
@@ -152,7 +152,7 @@ The 0-based character offset where the node starts.
 
 > **type**: `"FunctionDeclaration"` \| `"FunctionExpression"` \| `"ArrowFunctionExpression"`
 
-Defined in: [types.ts:65](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L65)
+Defined in: [types.ts:65](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L65)
 
 The type of the AST node (e.g., 'Identifier', 'FunctionDeclaration').
 

@@ -6,7 +6,7 @@
 
 # Interface: VerifyFailure
 
-Defined in: [types.ts:400](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L400)
+Defined in: [types.ts:400](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L400)
 
 Details of a verification failure.
 
@@ -16,7 +16,7 @@ Details of a verification failure.
 
 > `optional` **actual**: `unknown`
 
-Defined in: [types.ts:406](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L406)
+Defined in: [types.ts:406](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L406)
 
 The actual value found.
 
@@ -26,7 +26,7 @@ The actual value found.
 
 > `optional` **expected**: `unknown`
 
-Defined in: [types.ts:404](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L404)
+Defined in: [types.ts:404](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L404)
 
 The expected value or matcher description.
 
@@ -36,7 +36,7 @@ The expected value or matcher description.
 
 > **message**: `string`
 
-Defined in: [types.ts:408](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L408)
+Defined in: [types.ts:408](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L408)
 
 A human-readable error message.
 
@@ -46,6 +46,6 @@ A human-readable error message.
 
 > **path**: `string`
 
-Defined in: [types.ts:402](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L402)
+Defined in: [types.ts:402](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L402)
 
 The JSON path to the failed property.

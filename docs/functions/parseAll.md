@@ -8,7 +8,7 @@
 
 > **parseAll**(`source`, `options?`): [`FunctionInfo`](../classes/FunctionInfo.md)[]
 
-Defined in: [index.ts:82](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/index.ts#L82)
+Defined in: [index.ts:82](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/index.ts#L82)
 
 Quickly parses all functions in a source string using a default singleton analyzer.
 

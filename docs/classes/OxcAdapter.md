@@ -6,9 +6,9 @@
 
 # Class: OxcAdapter
 
-Defined in: [parser/oxc-adapter.ts:30](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/parser/oxc-adapter.ts#L30)
+Defined in: [parser/oxc-adapter.ts:22](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/parser/oxc-adapter.ts#L22)
 
-Parser adapter for the high-performance OXC engine (WASM).
+Parser adapter for the high-performance OXC engine.
 
 OXC is significantly faster than JS-based parsers, making it
 ideal for large files or batch processing.
@@ -23,7 +23,7 @@ ideal for large files or batch processing.
 
 > **new OxcAdapter**(): `OxcAdapter`
 
-Defined in: [parser/oxc-adapter.ts:33](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/parser/oxc-adapter.ts#L33)
+Defined in: [parser/oxc-adapter.ts:25](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/parser/oxc-adapter.ts#L25)
 
 #### Returns
 
@@ -39,7 +39,7 @@ Defined in: [parser/oxc-adapter.ts:33](https://github.com/isdk/js-analyst.js/blo
 
 > `readonly` **name**: [`EngineName`](../type-aliases/EngineName.md)
 
-Defined in: [parser/adapter.ts:15](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/parser/adapter.ts#L15)
+Defined in: [parser/adapter.ts:15](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/parser/adapter.ts#L15)
 
 The name of the parsing engine.
 
@@ -53,7 +53,7 @@ The name of the parsing engine.
 
 > **ready**: `boolean`
 
-Defined in: [parser/adapter.ts:17](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/parser/adapter.ts#L17)
+Defined in: [parser/adapter.ts:17](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/parser/adapter.ts#L17)
 
 Whether the parser is initialized and ready to use.
 
@@ -67,9 +67,9 @@ Whether the parser is initialized and ready to use.
 
 > **init**(): `Promise`\<`void`\>
 
-Defined in: [parser/oxc-adapter.ts:42](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/parser/oxc-adapter.ts#L42)
+Defined in: [parser/oxc-adapter.ts:34](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/parser/oxc-adapter.ts#L34)
 
-Dynamically loads and initializes the OXC WASM module.
+Dynamically loads the OXC module.
 
 #### Returns
 
@@ -77,7 +77,7 @@ Dynamically loads and initializes the OXC WASM module.
 
 #### Throws
 
-If the `@oxc-parser/wasm` package is not installed or fails to load.
+If the `oxc-parser` package is not installed or fails to load.
 
 #### Overrides
 
@@ -89,7 +89,7 @@ If the `@oxc-parser/wasm` package is not installed or fails to load.
 
 > **initSync**(): `void`
 
-Defined in: [parser/adapter.ts:39](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/parser/adapter.ts#L39)
+Defined in: [parser/adapter.ts:39](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/parser/adapter.ts#L39)
 
 Synchronously initializes the parser.
 Used for pure JavaScript parsers like Acorn.
@@ -108,7 +108,7 @@ Used for pure JavaScript parsers like Acorn.
 
 > **parse**(`source`, `options`): [`ASTNode`](../interfaces/ASTNode.md)
 
-Defined in: [parser/oxc-adapter.ts:69](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/parser/oxc-adapter.ts#L69)
+Defined in: [parser/oxc-adapter.ts:58](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/parser/oxc-adapter.ts#L58)
 
 Parses the source using the OXC engine.
 

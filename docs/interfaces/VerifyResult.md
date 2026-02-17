@@ -6,7 +6,7 @@
 
 # Interface: VerifyResult
 
-Defined in: [types.ts:414](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L414)
+Defined in: [types.ts:414](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L414)
 
 Result of a verification operation.
 
@@ -16,7 +16,7 @@ Result of a verification operation.
 
 > **failures**: [`VerifyFailure`](VerifyFailure.md)[]
 
-Defined in: [types.ts:418](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L418)
+Defined in: [types.ts:418](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L418)
 
 A list of failures if passed is false.
 
@@ -26,7 +26,7 @@ A list of failures if passed is false.
 
 > **passed**: `boolean`
 
-Defined in: [types.ts:416](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L416)
+Defined in: [types.ts:416](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L416)
 
 Whether the verification passed.
 
@@ -36,6 +36,6 @@ Whether the verification passed.
 
 > **summary**: `string`
 
-Defined in: [types.ts:420](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L420)
+Defined in: [types.ts:420](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L420)
 
 A summary string describing the overall result.

@@ -6,7 +6,7 @@
 
 # Interface: ParseResult
 
-Defined in: [types.ts:250](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L250)
+Defined in: [types.ts:250](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L250)
 
 The internal result structure of a parse operation.
 
@@ -16,7 +16,7 @@ The internal result structure of a parse operation.
 
 > **ast**: [`ASTNode`](ASTNode.md)
 
-Defined in: [types.ts:252](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L252)
+Defined in: [types.ts:252](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L252)
 
 The root AST node of the parsed source.
 
@@ -26,7 +26,7 @@ The root AST node of the parsed source.
 
 > **engine**: [`EngineName`](../type-aliases/EngineName.md)
 
-Defined in: [types.ts:256](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L256)
+Defined in: [types.ts:256](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L256)
 
 The name of the engine used for parsing.
 
@@ -36,6 +36,6 @@ The name of the engine used for parsing.
 
 > **offset**: `number`
 
-Defined in: [types.ts:254](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L254)
+Defined in: [types.ts:254](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L254)
 
 The character offset applied to the source during parsing.

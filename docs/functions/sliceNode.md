@@ -8,7 +8,7 @@
 
 > **sliceNode**(`source`, `node`, `offset`): `string` \| `null`
 
-Defined in: [utils/source.ts:15](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/utils/source.ts#L15)
+Defined in: [utils/source.ts:15](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/utils/source.ts#L15)
 
 Extracts a substring from the source code based on an AST node's boundaries.
 

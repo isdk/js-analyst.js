@@ -6,7 +6,7 @@
 
 # Class: FunctionInfo
 
-Defined in: [core/function-info.ts:28](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/function-info.ts#L28)
+Defined in: [core/function-info.ts:28](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/function-info.ts#L28)
 
 Implementation of [IFunctionInfo](../interfaces/IFunctionInfo.md) that provides detailed metadata
 about a detected function.
@@ -24,7 +24,7 @@ function properties, parameters, and its body.
 
 > **new FunctionInfo**(`node`, `source`, `offset`, `engine`): `FunctionInfo`
 
-Defined in: [core/function-info.ts:52](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/function-info.ts#L52)
+Defined in: [core/function-info.ts:52](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/function-info.ts#L52)
 
 **`Internal`**
 
@@ -68,7 +68,7 @@ The name of the engine used to parse this function.
 
 > **get** **body**(): [`BodyInfo`](BodyInfo.md)
 
-Defined in: [core/function-info.ts:259](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/function-info.ts#L259)
+Defined in: [core/function-info.ts:259](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/function-info.ts#L259)
 
 Metadata about the function body.
 
@@ -90,7 +90,7 @@ Metadata about the function body.
 
 > **get** **engine**(): `string`
 
-Defined in: [core/function-info.ts:144](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/function-info.ts#L144)
+Defined in: [core/function-info.ts:144](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/function-info.ts#L144)
 
 The name of the engine used to parse this function.
 
@@ -112,7 +112,7 @@ The name of the engine used to parse this function.
 
 > **get** **isArrow**(): `boolean`
 
-Defined in: [core/function-info.ts:197](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/function-info.ts#L197)
+Defined in: [core/function-info.ts:197](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/function-info.ts#L197)
 
 Whether the function is an arrow function.
 
@@ -134,7 +134,7 @@ Whether it's an arrow function.
 
 > **get** **isAsync**(): `boolean`
 
-Defined in: [core/function-info.ts:187](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/function-info.ts#L187)
+Defined in: [core/function-info.ts:187](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/function-info.ts#L187)
 
 Whether the function is marked as async.
 
@@ -156,7 +156,7 @@ Whether the function is asynchronous.
 
 > **get** **isDeclaration**(): `boolean`
 
-Defined in: [core/function-info.ts:202](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/function-info.ts#L202)
+Defined in: [core/function-info.ts:202](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/function-info.ts#L202)
 
 Whether the function is a declaration.
 
@@ -178,7 +178,7 @@ Whether it's a function declaration.
 
 > **get** **isExpression**(): `boolean`
 
-Defined in: [core/function-info.ts:207](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/function-info.ts#L207)
+Defined in: [core/function-info.ts:207](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/function-info.ts#L207)
 
 Whether the function is a function expression.
 
@@ -200,7 +200,7 @@ Whether it's a function expression.
 
 > **get** **isGenerator**(): `boolean`
 
-Defined in: [core/function-info.ts:192](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/function-info.ts#L192)
+Defined in: [core/function-info.ts:192](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/function-info.ts#L192)
 
 Whether the function is a generator function.
 
@@ -222,7 +222,7 @@ Whether the function is a generator.
 
 > **get** **isStatic**(): `boolean`
 
-Defined in: [core/function-info.ts:159](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/function-info.ts#L159)
+Defined in: [core/function-info.ts:159](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/function-info.ts#L159)
 
 Whether the function is a static class member.
 
@@ -244,7 +244,7 @@ Whether the function is a static class method.
 
 > **get** **kind**(): `FunctionKind`
 
-Defined in: [core/function-info.ts:149](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/function-info.ts#L149)
+Defined in: [core/function-info.ts:149](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/function-info.ts#L149)
 
 The functional kind of the function (e.g., 'method', 'getter').
 
@@ -266,7 +266,7 @@ The functional kind of the function (e.g., 'method').
 
 > **get** **name**(): `string` \| `null`
 
-Defined in: [core/function-info.ts:169](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/function-info.ts#L169)
+Defined in: [core/function-info.ts:169](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/function-info.ts#L169)
 
 The name of the function.
 
@@ -291,7 +291,7 @@ The name of the function, or null for anonymous functions.
 
 > **get** **node**(): [`ASTNode`](../interfaces/ASTNode.md)
 
-Defined in: [core/function-info.ts:134](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/function-info.ts#L134)
+Defined in: [core/function-info.ts:134](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/function-info.ts#L134)
 
 The underlying ESTree function node.
 
@@ -313,7 +313,7 @@ The underlying AST node of the function.
 
 > **get** **paramCount**(): `number`
 
-Defined in: [core/function-info.ts:224](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/function-info.ts#L224)
+Defined in: [core/function-info.ts:224](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/function-info.ts#L224)
 
 The number of parameters defined in the function signature.
 
@@ -335,7 +335,7 @@ The number of parameters.
 
 > **get** **params**(): [`ParamInfo`](ParamInfo.md)[]
 
-Defined in: [core/function-info.ts:214](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/function-info.ts#L214)
+Defined in: [core/function-info.ts:214](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/function-info.ts#L214)
 
 A list of metadata for each function parameter.
 
@@ -357,7 +357,7 @@ Metadata for each parameter.
 
 > **get** **returnType**(): `string` \| `null`
 
-Defined in: [core/function-info.ts:250](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/function-info.ts#L250)
+Defined in: [core/function-info.ts:250](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/function-info.ts#L250)
 
 The string representation of the TypeScript return type.
 Returns null if no type annotation is present.
@@ -380,7 +380,7 @@ The string representation of the TypeScript return type.
 
 > **get** **syntax**(): `FunctionSyntax`
 
-Defined in: [core/function-info.ts:154](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/function-info.ts#L154)
+Defined in: [core/function-info.ts:154](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/function-info.ts#L154)
 
 The syntactic form of the function (e.g., 'declaration', 'arrow').
 
@@ -402,7 +402,7 @@ The syntactic form of the function (e.g., 'arrow').
 
 > **get** **wrapper**(): [`ASTNode`](../interfaces/ASTNode.md) \| `null`
 
-Defined in: [core/function-info.ts:139](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/function-info.ts#L139)
+Defined in: [core/function-info.ts:139](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/function-info.ts#L139)
 
 The wrapper node (e.g., MethodDefinition, VariableDeclarator), if any.
 
@@ -416,7 +416,7 @@ The wrapper node (e.g., MethodDefinition, VariableDeclarator), if any.
 
 > **has**(`selector`): `boolean`
 
-Defined in: [core/function-info.ts:285](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/function-info.ts#L285)
+Defined in: [core/function-info.ts:285](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/function-info.ts#L285)
 
 Checks if any AST nodes match the CSS-like selector within the function scope.
 
@@ -442,7 +442,7 @@ The Esquery selector string.
 
 > **param**(`index`): [`ParamInfo`](ParamInfo.md) \| `null`
 
-Defined in: [core/function-info.ts:232](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/function-info.ts#L232)
+Defined in: [core/function-info.ts:232](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/function-info.ts#L232)
 
 Gets parameter metadata by its index.
 
@@ -468,7 +468,7 @@ The 0-based parameter index.
 
 > **paramByName**(`name`): [`ParamInfo`](ParamInfo.md) \| `null`
 
-Defined in: [core/function-info.ts:240](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/function-info.ts#L240)
+Defined in: [core/function-info.ts:240](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/function-info.ts#L240)
 
 Gets parameter metadata by its name.
 
@@ -494,7 +494,7 @@ The name of the parameter to find.
 
 > **query**(`selector`): [`ASTNode`](../interfaces/ASTNode.md)[]
 
-Defined in: [core/function-info.ts:277](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/function-info.ts#L277)
+Defined in: [core/function-info.ts:277](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/function-info.ts#L277)
 
 Searches for AST nodes matching the CSS-like selector within the function scope.
 
@@ -520,7 +520,7 @@ The Esquery selector string.
 
 > **toJSON**(): [`FunctionInfoJSON`](../interfaces/FunctionInfoJSON.md)
 
-Defined in: [core/function-info.ts:302](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/function-info.ts#L302)
+Defined in: [core/function-info.ts:302](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/function-info.ts#L302)
 
 Serializes the function information to a plain JSON object.
 
@@ -538,7 +538,7 @@ Serializes the function information to a plain JSON object.
 
 > **verify**(`schema`): [`VerifyResult`](../interfaces/VerifyResult.md)
 
-Defined in: [core/function-info.ts:295](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/function-info.ts#L295)
+Defined in: [core/function-info.ts:295](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/function-info.ts#L295)
 
 Verifies the function against a specified schema.
 

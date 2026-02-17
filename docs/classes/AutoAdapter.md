@@ -6,7 +6,7 @@
 
 # Class: AutoAdapter
 
-Defined in: [parser/auto-adapter.ts:40](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/parser/auto-adapter.ts#L40)
+Defined in: [parser/auto-adapter.ts:40](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/parser/auto-adapter.ts#L40)
 
 Smart adapter that selects between Acorn and OXC based on source size
 and availability. It also handles various source wrapping strategies
@@ -18,7 +18,7 @@ to parse code fragments.
 
 > **new AutoAdapter**(`options`): `AutoAdapter`
 
-Defined in: [parser/auto-adapter.ts:51](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/parser/auto-adapter.ts#L51)
+Defined in: [parser/auto-adapter.ts:51](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/parser/auto-adapter.ts#L51)
 
 #### Parameters
 
@@ -38,7 +38,7 @@ Configuration for the auto-adapter.
 
 > `readonly` **acorn**: [`AcornAdapter`](AcornAdapter.md)
 
-Defined in: [parser/auto-adapter.ts:42](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/parser/auto-adapter.ts#L42)
+Defined in: [parser/auto-adapter.ts:42](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/parser/auto-adapter.ts#L42)
 
 The Acorn adapter instance.
 
@@ -48,7 +48,7 @@ The Acorn adapter instance.
 
 > `readonly` **oxc**: [`OxcAdapter`](OxcAdapter.md)
 
-Defined in: [parser/auto-adapter.ts:44](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/parser/auto-adapter.ts#L44)
+Defined in: [parser/auto-adapter.ts:44](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/parser/auto-adapter.ts#L44)
 
 The OXC adapter instance.
 
@@ -58,7 +58,7 @@ The OXC adapter instance.
 
 > **parseFunctionSource**(`source`, `options`): [`ParseResult`](../interfaces/ParseResult.md)
 
-Defined in: [parser/auto-adapter.ts:102](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/parser/auto-adapter.ts#L102)
+Defined in: [parser/auto-adapter.ts:102](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/parser/auto-adapter.ts#L102)
 
 Attempts to parse the source using multiple wrapping strategies.
 
@@ -92,7 +92,7 @@ If all parsing attempts fail.
 
 > **select**(`source`, `options?`): [`ParserAdapter`](ParserAdapter.md)
 
-Defined in: [parser/auto-adapter.ts:84](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/parser/auto-adapter.ts#L84)
+Defined in: [parser/auto-adapter.ts:84](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/parser/auto-adapter.ts#L84)
 
 Selects the most appropriate adapter for the given source and options.
 
@@ -120,7 +120,7 @@ Optional engine override and other settings.
 
 > **warmup**(): `void`
 
-Defined in: [parser/auto-adapter.ts:61](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/parser/auto-adapter.ts#L61)
+Defined in: [parser/auto-adapter.ts:61](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/parser/auto-adapter.ts#L61)
 
 Pre-loads the OXC WASM module during idle time to improve
 performance for future large-file parses.

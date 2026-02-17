@@ -6,7 +6,7 @@
 
 # Interface: IParamInfo
 
-Defined in: [types.ts:439](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L439)
+Defined in: [types.ts:439](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L439)
 
 Interface representing detailed information about a function parameter.
 
@@ -16,7 +16,7 @@ Interface representing detailed information about a function parameter.
 
 > `readonly` **defaultNode**: [`ASTNode`](ASTNode.md) \| `null`
 
-Defined in: [types.ts:453](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L453)
+Defined in: [types.ts:453](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L453)
 
 The AST node representing the default value, if any.
 
@@ -26,7 +26,7 @@ The AST node representing the default value, if any.
 
 > `readonly` **hasDefault**: `boolean`
 
-Defined in: [types.ts:445](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L445)
+Defined in: [types.ts:445](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L445)
 
 Whether the parameter has a default value.
 
@@ -36,7 +36,7 @@ Whether the parameter has a default value.
 
 > `readonly` **isDestructured**: `boolean`
 
-Defined in: [types.ts:449](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L449)
+Defined in: [types.ts:449](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L449)
 
 Whether the parameter uses destructuring.
 
@@ -46,7 +46,7 @@ Whether the parameter uses destructuring.
 
 > `readonly` **isRest**: `boolean`
 
-Defined in: [types.ts:447](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L447)
+Defined in: [types.ts:447](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L447)
 
 Whether this is a rest parameter (...args).
 
@@ -56,7 +56,7 @@ Whether this is a rest parameter (...args).
 
 > `readonly` **name**: `string` \| `null`
 
-Defined in: [types.ts:441](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L441)
+Defined in: [types.ts:441](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L441)
 
 The parameter name, or null if it's a destructured pattern without a simple identifier.
 
@@ -66,7 +66,7 @@ The parameter name, or null if it's a destructured pattern without a simple iden
 
 > `readonly` **pattern**: `"object"` \| `"array"` \| `null`
 
-Defined in: [types.ts:451](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L451)
+Defined in: [types.ts:451](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L451)
 
 The type of destructuring pattern used.
 
@@ -76,7 +76,7 @@ The type of destructuring pattern used.
 
 > `readonly` **text**: `string` \| `null`
 
-Defined in: [types.ts:455](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L455)
+Defined in: [types.ts:455](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L455)
 
 The raw source text of the parameter.
 
@@ -86,7 +86,7 @@ The raw source text of the parameter.
 
 > `readonly` **type**: `string` \| `null`
 
-Defined in: [types.ts:443](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L443)
+Defined in: [types.ts:443](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L443)
 
 The string representation of the parameter's TypeScript type.
 
@@ -96,7 +96,7 @@ The string representation of the parameter's TypeScript type.
 
 > **toJSON**(): [`ParamInfoJSON`](ParamInfoJSON.md)
 
-Defined in: [types.ts:457](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L457)
+Defined in: [types.ts:457](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L457)
 
 Serializes the parameter info to a plain JSON object.
 

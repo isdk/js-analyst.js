@@ -8,7 +8,7 @@
 
 > **createVerifier**(`fnInfo`): `Verifier`
 
-Defined in: [core/verify.ts:442](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/verify.ts#L442)
+Defined in: [core/verify.ts:442](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/verify.ts#L442)
 
 ## Parameters
 

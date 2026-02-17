@@ -6,7 +6,7 @@
 
 # Interface: ParamInfoJSON
 
-Defined in: [types.ts:557](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L557)
+Defined in: [types.ts:557](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L557)
 
 Plain JSON representation of parameter information.
 
@@ -16,7 +16,7 @@ Plain JSON representation of parameter information.
 
 > **hasDefault**: `boolean`
 
-Defined in: [types.ts:560](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L560)
+Defined in: [types.ts:560](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L560)
 
 ***
 
@@ -24,7 +24,7 @@ Defined in: [types.ts:560](https://github.com/isdk/js-analyst.js/blob/4edf421876
 
 > **isDestructured**: `boolean`
 
-Defined in: [types.ts:562](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L562)
+Defined in: [types.ts:562](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L562)
 
 ***
 
@@ -32,7 +32,7 @@ Defined in: [types.ts:562](https://github.com/isdk/js-analyst.js/blob/4edf421876
 
 > **isRest**: `boolean`
 
-Defined in: [types.ts:561](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L561)
+Defined in: [types.ts:561](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L561)
 
 ***
 
@@ -40,7 +40,7 @@ Defined in: [types.ts:561](https://github.com/isdk/js-analyst.js/blob/4edf421876
 
 > **name**: `string` \| `null`
 
-Defined in: [types.ts:558](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L558)
+Defined in: [types.ts:558](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L558)
 
 ***
 
@@ -48,7 +48,7 @@ Defined in: [types.ts:558](https://github.com/isdk/js-analyst.js/blob/4edf421876
 
 > **pattern**: `"object"` \| `"array"` \| `null`
 
-Defined in: [types.ts:563](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L563)
+Defined in: [types.ts:563](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L563)
 
 ***
 
@@ -56,7 +56,7 @@ Defined in: [types.ts:563](https://github.com/isdk/js-analyst.js/blob/4edf421876
 
 > **text**: `string` \| `null`
 
-Defined in: [types.ts:564](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L564)
+Defined in: [types.ts:564](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L564)
 
 ***
 
@@ -64,4 +64,4 @@ Defined in: [types.ts:564](https://github.com/isdk/js-analyst.js/blob/4edf421876
 
 > **type**: `string` \| `null`
 
-Defined in: [types.ts:559](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/types.ts#L559)
+Defined in: [types.ts:559](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/types.ts#L559)

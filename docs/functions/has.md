@@ -8,7 +8,7 @@
 
 > **has**(`root`, `selector`, `scoped`, `owner?`): `boolean`
 
-Defined in: [ast/query.ts:99](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/ast/query.ts#L99)
+Defined in: [ast/query.ts:99](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/ast/query.ts#L99)
 
 Checks if the AST contains any nodes matching the given selector.
 

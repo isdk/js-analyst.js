@@ -6,7 +6,7 @@
 
 # Class: BodyInfo
 
-Defined in: [core/body-info.ts:18](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/body-info.ts#L18)
+Defined in: [core/body-info.ts:18](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/body-info.ts#L18)
 
 Implementation of [IBodyInfo](../interfaces/IBodyInfo.md) that provides metadata and analysis
 for a function body.
@@ -25,7 +25,7 @@ and AST querying.
 
 > **new BodyInfo**(`bodyNode`, `funcNode`, `source`, `offset`): `BodyInfo`
 
-Defined in: [core/body-info.ts:36](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/body-info.ts#L36)
+Defined in: [core/body-info.ts:36](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/body-info.ts#L36)
 
 **`Internal`**
 
@@ -69,7 +69,7 @@ The character offset used during parsing.
 
 > **get** **isBlock**(): `boolean`
 
-Defined in: [core/body-info.ts:54](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/body-info.ts#L54)
+Defined in: [core/body-info.ts:54](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/body-info.ts#L54)
 
 Whether the body is a block statement (wrapped in braces).
 
@@ -91,7 +91,7 @@ Whether the body is a block statement.
 
 > **get** **isEmpty**(): `boolean`
 
-Defined in: [core/body-info.ts:64](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/body-info.ts#L64)
+Defined in: [core/body-info.ts:64](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/body-info.ts#L64)
 
 Whether the function body is empty (e.g., in some declarations).
 
@@ -107,7 +107,7 @@ Whether the function body is empty (e.g., in some declarations).
 
 > **get** **isExpression**(): `boolean`
 
-Defined in: [core/body-info.ts:59](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/body-info.ts#L59)
+Defined in: [core/body-info.ts:59](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/body-info.ts#L59)
 
 Whether the body is a single expression (common in arrow functions).
 
@@ -129,7 +129,7 @@ Whether the body is a single expression (arrow functions).
 
 > **get** **node**(): [`ASTNode`](../interfaces/ASTNode.md)
 
-Defined in: [core/body-info.ts:49](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/body-info.ts#L49)
+Defined in: [core/body-info.ts:49](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/body-info.ts#L49)
 
 The underlying AST node of the body.
 
@@ -151,7 +151,7 @@ The AST node of the body (BlockStatement or Expression).
 
 > **get** **returns**(): [`ASTNode`](../interfaces/ASTNode.md)[]
 
-Defined in: [core/body-info.ts:115](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/body-info.ts#L115)
+Defined in: [core/body-info.ts:115](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/body-info.ts#L115)
 
 All return statements found within the current function's scope.
 
@@ -176,7 +176,7 @@ All return statements found within the body's scope.
 
 > **get** **statementCount**(): `number`
 
-Defined in: [core/body-info.ts:92](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/body-info.ts#L92)
+Defined in: [core/body-info.ts:92](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/body-info.ts#L92)
 
 The number of top-level statements in the body.
 
@@ -198,7 +198,7 @@ The number of top-level statements.
 
 > **get** **statements**(): [`ASTNode`](../interfaces/ASTNode.md)[]
 
-Defined in: [core/body-info.ts:74](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/body-info.ts#L74)
+Defined in: [core/body-info.ts:74](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/body-info.ts#L74)
 
 The list of top-level statements within the body.
 
@@ -223,7 +223,7 @@ The list of top-level statements in the body.
 
 > **get** **text**(): `string` \| `null`
 
-Defined in: [core/body-info.ts:101](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/body-info.ts#L101)
+Defined in: [core/body-info.ts:101](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/body-info.ts#L101)
 
 The raw source text of the function body.
 
@@ -245,7 +245,7 @@ The raw source text of the body.
 
 > **has**(`selector`): `boolean`
 
-Defined in: [core/body-info.ts:153](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/body-info.ts#L153)
+Defined in: [core/body-info.ts:153](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/body-info.ts#L153)
 
 Checks if any AST nodes match the CSS-like selector within the function body.
 
@@ -271,7 +271,7 @@ The Esquery selector string.
 
 > **query**(`selector`): [`ASTNode`](../interfaces/ASTNode.md)[]
 
-Defined in: [core/body-info.ts:144](https://github.com/isdk/js-analyst.js/blob/4edf4218767c639fe7374c900929abd389606f45/src/core/body-info.ts#L144)
+Defined in: [core/body-info.ts:144](https://github.com/isdk/js-analyst.js/blob/027e5871d2475cbea451a45da8230763adb9f33f/src/core/body-info.ts#L144)
 
 Searches for AST nodes matching the CSS-like selector within the function body.
 
