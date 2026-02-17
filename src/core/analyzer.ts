@@ -126,12 +126,24 @@ export class Analyzer {
       { ...options, ts: isTS, sourceType: options.sourceType ?? 'script' },
     );
 
-    const funcNode = findFirst(ast, isFunctionNode);
-    if (!funcNode) {
+    const nodes = findAll(ast, isFunctionNode);
+    if (nodes.length === 0) {
       throw new Error('No function node found in parsed AST');
     }
 
-    return new FunctionInfo(funcNode, source, offset, engine);
+    const seenNodes = new Set<ASTNode>();
+    for (const node of nodes) {
+      if (seenNodes.has(node)) continue;
+      const info = new FunctionInfo(node, source, offset, engine);
+      if (info.node !== node) {
+        seenNodes.add(info.node);
+      }
+      if (this._matchFilters(info, options)) {
+        return info;
+      }
+    }
+
+    throw new Error('No function matches the specified filters');
   }
 
   /**
@@ -149,9 +161,34 @@ export class Analyzer {
       { ...options, ts: isTS, sourceType: options.sourceType ?? 'module' },
     );
 
-    return findAll(ast, isFunctionNode).map(
-      (node) => new FunctionInfo(node, source, offset, engine),
-    );
+    const nodes = findAll(ast, isFunctionNode);
+    const result: FunctionInfo[] = [];
+    const seenNodes = new Set<ASTNode>();
+
+    for (const node of nodes) {
+      if (seenNodes.has(node)) continue;
+      const info = new FunctionInfo(node, source, offset, engine);
+      if (info.node !== node) {
+        seenNodes.add(info.node);
+      }
+      if (this._matchFilters(info, options)) {
+        result.push(info);
+      }
+    }
+
+    return result;
+  }
+
+  private _matchFilters(info: FunctionInfo, options: ParseOptions): boolean {
+    if (options.kind) {
+      const kinds = Array.isArray(options.kind) ? options.kind : [options.kind];
+      if (!kinds.includes(info.kind)) return false;
+    }
+    if (options.syntax) {
+      const syntaxes = Array.isArray(options.syntax) ? options.syntax : [options.syntax];
+      if (!syntaxes.includes(info.syntax)) return false;
+    }
+    return true;
   }
 
   /**

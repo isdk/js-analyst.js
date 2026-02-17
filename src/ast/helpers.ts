@@ -10,6 +10,11 @@ export const FUNCTION_TYPES = new Set([
   'FunctionDeclaration',
   'FunctionExpression',
   'ArrowFunctionExpression',
+  'MethodDefinition',
+  'PropertyDefinition',
+  'TSMethodSignature',
+  'TSDeclareFunction',
+  'VariableDeclarator',
 ] as const);
 
 export const LOOP_TYPES = new Set([
@@ -36,7 +41,16 @@ export function isNode(value: unknown): value is ASTNode {
 }
 
 export function isFunctionNode(node: unknown): boolean {
-  return isNode(node) && FUNCTION_TYPES.has(node.type as any);
+  if (!isNode(node)) return false;
+  const type = node.type;
+  if (type === 'VariableDeclarator') {
+    return isFunctionNode((node as any).init);
+  }
+  if (type === 'Property' || type === 'PropertyDefinition') {
+    return isFunctionNode((node as any).value);
+  }
+  if (FUNCTION_TYPES.has(type as any)) return true;
+  return false;
 }
 
 export function isLoopNode(node: unknown): boolean {

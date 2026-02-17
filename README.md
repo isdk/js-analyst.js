@@ -56,17 +56,31 @@ import { createAnalyzer } from '@isdk/js-analyst';
 
 const analyzer = createAnalyzer();
 
-const fn = analyzer.parse('function add(x, y) { return x + y }');
+const fn = analyzer.parse('class A { static async *gen() {} }');
 
-fn.name          // 'add'
-fn.isAsync       // false
-fn.isGenerator   // false
+fn.name          // 'gen'
+fn.kind          // 'method'
+fn.syntax        // 'expression'
+fn.isStatic      // true
+fn.isAsync       // true
+fn.isGenerator   // true
 fn.isArrow       // false
-fn.paramCount    // 2
-fn.param(0).name // 'x'
-fn.param(1).name // 'y'
-fn.body.text     // 'return x + y'
-fn.returnType    // null (no TS annotation)
+fn.paramCount    // 0
+```
+
+### Advanced Filtering
+
+Find specific types of functions in a large source file:
+
+```typescript
+// Find all getters
+const getters = analyzer.parseAll(source, { kind: 'getter' });
+
+// Find all arrow functions
+const arrows = analyzer.parseAll(source, { syntax: 'arrow' });
+
+// Find all static methods
+const statics = analyzer.parseAll(source).filter(f => f.isStatic);
 ```
 
 ### Parse TypeScript
@@ -166,6 +180,8 @@ const fn = analyzer.parse(myFunc);
 | `ts` | `boolean` | auto-detect | Force TypeScript parsing |
 | `engine` | `'acorn' \| 'oxc'` | auto | Force a specific engine for this call |
 | `sourceType` | `'script' \| 'module'` | `'script'` | ECMAScript source type |
+| `kind` | `FunctionKind \| FunctionKind[]` | - | Filter by kind (`function`, `method`, `getter`, `setter`, `constructor`) |
+| `syntax` | `FunctionSyntax \| FunctionSyntax[]` | - | Filter by syntax (`declaration`, `expression`, `arrow`) |
 
 ---
 
@@ -216,6 +232,9 @@ Returned by `analyzer.parse()`. All properties are lazy-evaluated and cached.
 | Property | Type | Description |
 |----------|------|-------------|
 | `name` | `string \| null` | Function name (`null` for anonymous) |
+| `kind` | `'function' \| 'method' \| 'getter' \| 'setter' \| 'constructor'` | Logical role |
+| `syntax` | `'declaration' \| 'expression' \| 'arrow'` | Syntactic form |
+| `isStatic` | `boolean` | Whether it's a static class member |
 | `isAsync` | `boolean` | Whether the function is `async` |
 | `isGenerator` | `boolean` | Whether the function is a generator (`function*`) |
 | `isArrow` | `boolean` | Whether it's an arrow function |
@@ -278,6 +297,9 @@ The schema is a declarative object describing what you expect:
 ```typescript
 interface VerifySchema {
   name?: Matcher<string | null>;      // exact, regex, or function
+  kind?: Matcher<FunctionKind>;
+  syntax?: Matcher<FunctionSyntax>;
+  static?: boolean;
   async?: boolean;
   generator?: boolean;
   arrow?: boolean;

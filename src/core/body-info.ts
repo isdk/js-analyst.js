@@ -17,12 +17,12 @@ export class BodyInfo implements IBodyInfo {
   private _returns?: ASTNode[];
 
   constructor(
-    bodyNode: ASTNode,
+    bodyNode: ASTNode | undefined,
     funcNode: ASTNode,
     source: string,
     offset: number,
   ) {
-    this._node = bodyNode;
+    this._node = bodyNode || { type: 'EmptyBody' } as any;
     this._funcNode = funcNode;
     this._source = source;
     this._offset = offset;
@@ -37,7 +37,11 @@ export class BodyInfo implements IBodyInfo {
   }
 
   get isExpression(): boolean {
-    return !this.isBlock;
+    return this._node.type !== 'EmptyBody' && !this.isBlock;
+  }
+
+  get isEmpty(): boolean {
+    return this._node.type === 'EmptyBody';
   }
 
   /**
@@ -45,8 +49,10 @@ export class BodyInfo implements IBodyInfo {
    *
    * - 块体: 直接返回 BlockStatement.body
    * - 表达式体: 包装成虚拟 ReturnStatement
+   * - 空体: 返回空数组
    */
   get statements(): ASTNode[] {
+    if (this.isEmpty) return [];
     if (this.isBlock) {
       return (this._node as unknown as BlockStatement).body;
     }
@@ -68,6 +74,7 @@ export class BodyInfo implements IBodyInfo {
    * 函数体源码文本
    */
   get text(): string | null {
+    if (this.isEmpty) return null;
     if (this.isBlock) {
       return sliceBlockBody(this._source, this._node, this._offset);
     }
@@ -81,7 +88,9 @@ export class BodyInfo implements IBodyInfo {
    */
   get returns(): ASTNode[] {
     if (!this._returns) {
-      if (this.isExpression) {
+      if (this.isEmpty) {
+        this._returns = [];
+      } else if (this.isExpression) {
         // 表达式体就是一个隐式 return
         this._returns = [{
           type: 'ReturnStatement',

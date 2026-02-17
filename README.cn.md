@@ -56,17 +56,31 @@ import { createAnalyzer } from 'fn-analyst';
 
 const analyzer = createAnalyzer();
 
-const fn = analyzer.parse('function add(x, y) { return x + y }');
+const fn = analyzer.parse('class A { static async *gen() {} }');
 
-fn.name          // 'add'
-fn.isAsync       // false
-fn.isGenerator   // false
+fn.name          // 'gen'
+fn.kind          // 'method'
+fn.syntax        // 'expression'
+fn.isStatic      // true
+fn.isAsync       // true
+fn.isGenerator   // true
 fn.isArrow       // false
-fn.paramCount    // 2
-fn.param(0).name // 'x'
-fn.param(1).name // 'y'
-fn.body.text     // 'return x + y'
-fn.returnType    // null（无 TS 注解）
+fn.paramCount    // 0
+```
+
+### 高级过滤
+
+在大型源文件中查找特定类型的函数：
+
+```typescript
+// 查找所有 getter
+const getters = analyzer.parseAll(source, { kind: 'getter' });
+
+// 查找所有箭头函数
+const arrows = analyzer.parseAll(source, { syntax: 'arrow' });
+
+// 查找所有静态方法
+const statics = analyzer.parseAll(source).filter(f => f.isStatic);
 ```
 
 ### 解析 TypeScript
@@ -168,6 +182,8 @@ const fn = analyzer.parse(myFunc);
 | `ts` | `boolean` | 自动检测 | 强制按 TypeScript 解析 |
 | `engine` | `'acorn' \| 'oxc'` | 自动 | 强制本次调用使用指定引擎 |
 | `sourceType` | `'script' \| 'module'` | `'script'` | ECMAScript 源码类型 |
+| `kind` | `FunctionKind \| FunctionKind[]` | - | 按种类过滤 (`function`, `method`, `getter`, `setter`, `constructor`) |
+| `syntax` | `FunctionSyntax \| FunctionSyntax[]` | - | 按语法过滤 (`declaration`, `expression`, `arrow`) |
 
 ---
 
@@ -218,6 +234,9 @@ const result = analyzer.verify(
 | 属性 | 类型 | 说明 |
 |------|------|------|
 | `name` | `string \| null` | 函数名（匿名函数为 `null`） |
+| `kind` | `'function' \| 'method' \| 'getter' \| 'setter' \| 'constructor'` | 逻辑角色 |
+| `syntax` | `'declaration' \| 'expression' \| 'arrow'` | 语法形式 |
+| `isStatic` | `boolean` | 是否为静态类成员 |
 | `isAsync` | `boolean` | 是否 `async` |
 | `isGenerator` | `boolean` | 是否生成器函数（`function*`） |
 | `isArrow` | `boolean` | 是否箭头函数 |
@@ -280,6 +299,9 @@ Schema 是一个声明式对象，描述你期望的函数结构：
 ```typescript
 interface VerifySchema {
   name?: Matcher<string | null>;      // 精确值、正则或函数
+  kind?: Matcher<FunctionKind>;
+  syntax?: Matcher<FunctionSyntax>;
+  static?: boolean;
   async?: boolean;
   generator?: boolean;
   arrow?: boolean;

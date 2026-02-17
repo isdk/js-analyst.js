@@ -66,6 +66,9 @@ class Verifier {
 
     // ---- 基本属性 ----
     this.check(failures, 'name',       schema.name,       this.fn.name);
+    this.check(failures, 'kind',       schema.kind,       this.fn.kind);
+    this.check(failures, 'syntax',     schema.syntax,     this.fn.syntax);
+    this.check(failures, 'static',     schema.static,     this.fn.isStatic);
     this.check(failures, 'async',      schema.async,      this.fn.isAsync);
     this.check(failures, 'generator',  schema.generator,  this.fn.isGenerator);
     this.check(failures, 'arrow',      schema.arrow,      this.fn.isArrow);

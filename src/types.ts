@@ -143,6 +143,10 @@ export interface ParseOptions {
   sourceType?: 'script' | 'module';
   /** 源文件名（oxc 用） */
   sourceFilename?: string;
+  /** 过滤特定的函数种类 */
+  kind?: FunctionKind | FunctionKind[];
+  /** 过滤特定的语法结构 */
+  syntax?: FunctionSyntax | FunctionSyntax[];
 }
 
 export interface ParseResult {
@@ -184,6 +188,9 @@ export interface BodySchema {
 
 export interface VerifySchema {
   name?: Matcher<string | null>;
+  kind?: Matcher<FunctionKind>;
+  syntax?: Matcher<FunctionSyntax>;
+  static?: boolean;
   async?: boolean;
   generator?: boolean;
   arrow?: boolean;
@@ -208,6 +215,9 @@ export interface VerifyResult {
 }
 
 // =================== 信息类接口 ===================
+
+export type FunctionKind = 'function' | 'method' | 'getter' | 'setter' | 'constructor';
+export type FunctionSyntax = 'declaration' | 'expression' | 'arrow';
 
 export interface IParamInfo {
   readonly name: string | null;
@@ -237,6 +247,9 @@ export interface IFunctionInfo {
   readonly node: ASTNode;
   readonly engine: string;
   readonly name: string | null;
+  readonly kind: FunctionKind;
+  readonly syntax: FunctionSyntax;
+  readonly isStatic: boolean;
   readonly isAsync: boolean;
   readonly isGenerator: boolean;
   readonly isArrow: boolean;
@@ -278,6 +291,9 @@ export interface ParamInfoJSON {
 
 export interface FunctionInfoJSON {
   name: string | null;
+  kind: FunctionKind;
+  syntax: FunctionSyntax;
+  static: boolean;
   type: string;
   async: boolean;
   generator: boolean;
