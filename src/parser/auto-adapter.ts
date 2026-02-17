@@ -28,6 +28,8 @@ const WRAP_STRATEGIES: WrapStrategy[] = [
   { wrap: (s) => `(${s})`, offset: 1 }, // Wrapped in parens (expression)
   { wrap: (s) => `({${s}})`, offset: 2 }, // Wrapped in object (method shorthand)
   { wrap: (s) => `(class{${s}})`, offset: 7 }, // Wrapped in class (class method)
+  { wrap: (s) => `(function(){${s}})`, offset: 12 }, // Wrapped in function expression
+  { wrap: (s) => `(async function*(){${s}})`, offset: 19 }, // Wrapped in async generator expression
 ]
 
 /**

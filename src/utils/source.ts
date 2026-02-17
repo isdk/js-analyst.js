@@ -88,7 +88,7 @@ export function detectTypeScript(source: string): boolean {
 
   const tsPatterns: RegExp[] = [
     /\)\s*:\s*\w+/, // Return type ): number
-    /\w\s*:\s*(number|string|boolean|any|void|never|unknown|object|bigint|symbol)\b/,
+    /\w\s*:\s*[\w<|[].+/, // General type annotation : Type, : Promise<T>, : string | number
     /\binterface\s+\w+/, // interface Foo
     /\btype\s+\w+\s*=/, // type Foo =
     /\benum\s+\w+/, // enum Foo
@@ -96,6 +96,7 @@ export function detectTypeScript(source: string): boolean {
     /\bdeclare\s+(function|const|let|var|class|interface|type|enum|module|namespace)\b/,
     /<\w+(?:\s*,\s*\w+)*>\s*\(/, // Generic call <T>(
     /\bas\s+\w+/, // Type assertion as Type
+    /\bpublic\b|\bprivate\b|\bprotected\b|\breadonly\b/, // Class modifiers
   ]
 
   return tsPatterns.some((pattern) => pattern.test(source))

@@ -280,9 +280,44 @@ export interface AnalyzerOptions {
 // =================== Verification & Schemas ===================
 
 /**
- * A matcher for values: can be a literal value, a RegExp, or a predicate function.
+ * A logical matcher that supports combining multiple conditions.
  */
-export type Matcher<T> = T | RegExp | ((value: T) => boolean)
+export interface LogicMatcher<T> {
+  /** Matches if any of the provided matchers match. */
+  $or?: Matcher<T>[]
+  /** Matches if all of the provided matchers match. */
+  $and?: Matcher<T>[]
+  /** Matches if the provided matcher does NOT match. */
+  $not?: Matcher<T>
+}
+
+/**
+ * A matcher for values: can be a literal value, a RegExp, a predicate function,
+ * or a logical combination of these.
+ */
+export type Matcher<T> = T | RegExp | ((value: T) => boolean) | LogicMatcher<T>
+
+/**
+ * A matcher for a sequence of items (like statements in a body or return values).
+ */
+export interface SequenceMatcher {
+  /**
+   * Ordered matching using JS snippets.
+   * Supports `...` for skipping elements and `_` for single element wildcards.
+   */
+  $match?: string | string[]
+  /**
+   * Unordered "contains" check. Matches if the item(s) exist anywhere in the sequence.
+   * Can be JS snippets or esquery selectors.
+   */
+  $has?: string | string[]
+  /** Matches if AT LEAST ONE item in the sequence matches the pattern(s). */
+  $any?: string | string[]
+  /** Matches if ALL items in the sequence match the pattern(s). */
+  $all?: string | string[]
+  /** Matches if NO items in the sequence match the pattern(s). */
+  $none?: string | string[]
+}
 
 /**
  * Schema for verifying a function parameter.
@@ -305,48 +340,59 @@ export interface ParamSchema {
 /**
  * Schema for verifying a function body.
  */
-export interface BodySchema {
+export interface BodySchema extends SequenceMatcher {
   /** Matcher for the number of statements in the body. */
   statementCount?: Matcher<number>
-  /** CSS-like selector(s) that must exist in the body. */
+  /** CSS-like selector(s) that must exist in the body. (Legacy support) */
   has?: string | string[]
-  /** CSS-like selector(s) that must NOT exist in the body. */
+  /** CSS-like selector(s) that must NOT exist in the body. (Legacy support) */
   notHas?: string | string[]
   /** Custom validation for return statements. */
-  returns?: (helper: IReturnHelper, node: ASTNode, index: number) => boolean
+  returns?:
+    | string
+    | string[]
+    | SequenceMatcher
+    | ((helper: IReturnHelper, node: ASTNode, index: number) => boolean)
   /** Custom verification function for the body. */
   custom?: (body: IBodyInfo) => boolean
 }
 
 /**
  * Comprehensive schema for verifying a function.
+ * Can be a structured object or a JS/TS snippet string.
  */
-export interface VerifySchema {
-  /** Matcher for the function name. */
-  name?: Matcher<string | null>
-  /** Matcher for the function kind (e.g., 'method'). */
-  kind?: Matcher<FunctionKind>
-  /** Matcher for the function syntax (e.g., 'arrow'). */
-  syntax?: Matcher<FunctionSyntax>
-  /** Whether the function is a static method. */
-  static?: boolean
-  /** Whether the function is async. */
-  async?: boolean
-  /** Whether the function is a generator. */
-  generator?: boolean
-  /** Whether the function is an arrow function. */
-  arrow?: boolean
-  /** Matcher for the number of parameters. */
-  paramCount?: Matcher<number>
-  /** Verification schemas for individual parameters. */
-  params?: ParamSchema[]
-  /** Matcher for the return type (string representation). */
-  returnType?: Matcher<string | null>
-  /** Verification schema for the function body. */
-  body?: BodySchema
-  /** Custom verification function for the entire function info. */
-  custom?: (fn: IFunctionInfo) => boolean
-}
+export type VerifySchema =
+  | {
+      /** Matcher for the function name. */
+      name?: Matcher<string | null>
+      /** Matcher for the function kind (e.g., 'method'). */
+      kind?: Matcher<FunctionKind>
+      /** Matcher for the function syntax (e.g., 'arrow'). */
+      syntax?: Matcher<FunctionSyntax>
+      /** Whether the function is a static method. */
+      static?: boolean
+      /** Whether the function is async. */
+      async?: boolean
+      /** Whether the function is a generator. */
+      generator?: boolean
+      /** Whether the function is an arrow function. */
+      arrow?: boolean
+      /** Matcher for the number of parameters. */
+      paramCount?: Matcher<number>
+      /** Verification schemas for individual parameters. */
+      params?: ParamSchema[]
+      /** Matcher for the return type (string representation). */
+      returnType?: Matcher<string | null>
+      /** Whether to enable strict matching (e.g., matching variable declaration kind). */
+      strict?: boolean
+      /** Custom validation for return statements (shortcut for body.returns). */
+      returns?: BodySchema['returns']
+      /** Verification schema for the function body. */
+      body?: string | string[] | BodySchema
+      /** Custom verification function for the entire function info. */
+      custom?: (fn: IFunctionInfo) => boolean
+    }
+  | string
 
 /**
  * Details of a verification failure.
