@@ -6,23 +6,15 @@ import { ParserAdapter } from './adapter.js'
 import type { ASTNode, ParseOptions } from '../types.js'
 
 /**
- * Interface for the dynamically imported OXC WASM module.
+ * Interface for the dynamically imported OXC module.
  *
  * OXC is an optional dependency to keep the core package light.
  */
-interface OxcModule {
-  default: () => Promise<void>
-  parseSync: (
-    source: string,
-    options: { sourceFilename?: string; sourceType?: string }
-  ) => {
-    program: ASTNode
-    errors: Array<{ message: string; offset?: number }>
-  }
-}
+type OxcModule = typeof import('oxc-parser')
+
 
 /**
- * Parser adapter for the high-performance OXC engine (WASM).
+ * Parser adapter for the high-performance OXC engine.
  *
  * OXC is significantly faster than JS-based parsers, making it
  * ideal for large files or batch processing.
@@ -35,25 +27,22 @@ export class OxcAdapter extends ParserAdapter {
   }
 
   /**
-   * Dynamically loads and initializes the OXC WASM module.
+   * Dynamically loads the OXC module.
    *
-   * @throws {Error} If the `@oxc-parser/wasm` package is not installed or fails to load.
+   * @throws {Error} If the `oxc-parser` package is not installed or fails to load.
    */
   async init(): Promise<void> {
     if (this.ready) return
 
     try {
       // Dynamic import to avoid errors if not installed
-      this.module = (await import('@oxc-parser/wasm')) as unknown as OxcModule
-      if (typeof this.module.default === 'function') {
-        await (this.module as any).default()
-      }
+      this.module = (await import('oxc-parser')) as unknown as OxcModule
       this.ready = true
     } catch (err) {
       this.ready = false
       throw new Error(
-        `Failed to initialize @oxc-parser/wasm. ` +
-          `Make sure it is installed: npm install @oxc-parser/wasm\n` +
+        `Failed to initialize oxc-parser. ` +
+          `Make sure it is installed: npm install oxc-parser\n` +
           `Original error: ${(err as Error).message}`
       )
     }
@@ -71,19 +60,30 @@ export class OxcAdapter extends ParserAdapter {
       throw new Error('OxcAdapter not initialized. Call init() first.')
     }
 
-    const result = this.module.parseSync(source, {
-      sourceFilename:
-        options.sourceFilename ?? (options.ts ? 'input.ts' : 'input.js'),
+    const filename =
+      options.sourceFilename ?? (options.ts ? 'input.ts' : 'input.js')
+    const result = this.module.parseSync(filename, source, {
       sourceType: options.sourceType ?? 'module',
     })
 
     if (result.errors.length > 0) {
       const first = result.errors[0]!
-      const err = new SyntaxError(first.message)
-      ;(err as any).pos = first.offset
+      const messages = result.errors
+        .map((e) => e.codeframe || e.message)
+        .join('\n')
+      const err = new SyntaxError(messages)
+
+      if (first.labels && first.labels.length > 0) {
+        const label = first.labels[0]!
+        ;(err as any).pos = label.start
+        ;(err as any).loc = {
+          start: label.start,
+          end: label.end,
+        }
+      }
       throw err
     }
 
-    return result.program
+    return result.program as unknown as ASTNode
   }
 }

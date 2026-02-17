@@ -12,7 +12,7 @@ export default defineConfig({
   // splitting: true,
   // sourcemap: true,
   // clean: true,
-  external: ['@oxc-parser/wasm'],
+  external: ['oxc-parser'],
   minify: 'terser',
   terserOptions: {
     // compress: {

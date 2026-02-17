@@ -55,7 +55,7 @@
     "@antfu/eslint-config": "^7.0.1",
     "@fastify/cookie": "^11.0.2",
     "@fastify/formbody": "^8.0.2",
-    "@oxc-parser/wasm": "^0.60.0",
+    "oxc-parser": "^0.114.0",
     "@types/jest": "^30.0.0",
     "@types/jsdom": "^27.0.0",
     "@types/lodash-es": "^4.17.12",
