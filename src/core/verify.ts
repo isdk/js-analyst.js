@@ -23,7 +23,8 @@ import {
 } from '../ast/matcher.js'
 import { AutoAdapter } from '../parser/auto-adapter.js'
 import { jsonSchemaToParamSchema } from './schema-converter.js'
-import { tsTypeToString } from '../utils/ts-type.js'
+import { tsTypeToString, compareTypes } from '../utils/ts-type.js'
+import { inferType } from '../utils/inference.js'
 
 // =================== Parser Singleton ===================
 
@@ -299,9 +300,11 @@ class Verifier {
         return
       }
 
+      const branchFailures: VerifyFailure[][] = []
       const results = returnNodes.map((node) => {
         const subFailures: VerifyFailure[] = []
         this.verifyReturnTypeDetail(subFailures, path, node, schema)
+        branchFailures.push(subFailures)
         return subFailures.length === 0
       })
 
@@ -309,6 +312,10 @@ class Verifier {
         failures.push({
           path,
           message: `${path}: some return values do not satisfy the schema`,
+        })
+        // Add detailed failures from branches
+        branchFailures.forEach((subs) => {
+          failures.push(...subs)
         })
       }
       return
@@ -405,17 +412,11 @@ class Verifier {
           (typeNode as any).types?.some((t: any) => t.type === 'TSTupleType'))
     } else {
       // Expression node (JS)
+      actualType = inferType(typeNode)
       if (typeNode.type === 'ObjectExpression') {
-        actualType = 'object'
         hasObject = true
       } else if (typeNode.type === 'ArrayExpression') {
-        actualType = 'array'
         hasArray = true
-      } else if (typeNode.type === 'Literal') {
-        const val = (typeNode as any).value
-        actualType = val === null ? 'null' : typeof val
-      } else if (typeNode.type === 'Identifier') {
-        actualType = (typeNode as any).name
       }
     }
 
@@ -823,7 +824,16 @@ class Verifier {
   ): void {
     if (matcher === undefined) return
 
-    const deepMatch = (v: any, p: any) => isMatch(v, p, this.ctx)
+    // In non-strict mode, if actual type is null (missing annotation in JS), 
+    // we treat it as 'any' and allow it to pass.
+    if (!this.ctx.strict && actual === null) return
+
+    const deepMatch = (v: any, p: any) => {
+      if (typeof v === 'string' && typeof p === 'string') {
+        return compareTypes(v, p)
+      }
+      return isMatch(v, p, this.ctx)
+    }
 
     // 1. Try direct match using evaluateMatcher
     if (evaluateMatcher(actual, matcher, deepMatch)) {
@@ -854,6 +864,10 @@ class Verifier {
     actual: T
   ): void {
     if (matcher === undefined) return
+
+    // In non-strict mode, if actual type is null (missing annotation in JS), 
+    // we treat it as 'any' and allow it to pass.
+    if (!this.ctx.strict && actual === null && path.endsWith('.type')) return
 
     // Use isMatch logic for type strings to support 'any' wildcard consistently
     const deepMatch =

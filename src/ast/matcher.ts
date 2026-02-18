@@ -4,7 +4,7 @@
 
 import type { ASTNode, Matcher, LogicMatcher } from '../types.js'
 import { isNode, isIdentifier } from './helpers.js'
-import { tsTypeToString } from '../utils/ts-type.js'
+import { tsTypeToString, compareTypes } from '../utils/ts-type.js'
 
 /**
  * Context for matching, including function parameters for `args[i]` resolution.
@@ -175,7 +175,8 @@ function matchTsType(target: unknown, pattern: unknown): boolean {
   const targetStr = isNode(targetNode)
     ? tsTypeToString(targetNode)
     : String(target)
-  if (targetStr === patternStr) return true
+  
+  if (compareTypes(targetStr, patternStr)) return true
 
   if (patternStr.includes('any')) {
     const regex = new RegExp(

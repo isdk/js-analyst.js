@@ -20,6 +20,31 @@ const KEYWORD_MAP: Record<string, string> = {
   TSObjectKeyword: 'object',
 }
 
+/** List of built-in types that should be matched case-insensitively. */
+export const BUILTIN_TYPES = [
+  'string', 'number', 'boolean', 'object', 'array', 'date',
+  'regexp', 'any', 'void', 'undefined', 'null'
+]
+
+/**
+ * Compares two type strings with logical type support.
+ * Built-in types are matched case-insensitively, while custom classes
+ * are matched with strict case sensitivity.
+ */
+export function compareTypes(a: string | null | undefined, b: string | null | undefined): boolean {
+  if (a === b) return true
+  if (!a || !b) return false
+
+  const aLower = a.toLowerCase()
+  const bLower = b.toLowerCase()
+
+  if (BUILTIN_TYPES.includes(aLower) || BUILTIN_TYPES.includes(bLower)) {
+    return aLower === bLower
+  }
+
+  return a === b
+}
+
 /**
  * Converts a TypeScript AST type node into a human-readable string representation.
  *

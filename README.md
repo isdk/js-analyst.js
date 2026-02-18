@@ -9,7 +9,8 @@ Small files are parsed instantly with [acorn](https://github.com/acornjs/acorn) 
 
 - 🔍 **Complete Function Analysis** — Extract name, params (nested destructuring/defaults), body, return paths, and TS types.
 - 🛡️ **Structured Verification Engine** — Native JSON Schema support with recursive destructuring, array items, and logic combinators (anyOf, oneOf, etc.).
-- 🤖 **JS Fallback Analysis** — Automatically analyzes `return` statements in JS code when TS annotations are missing for precise "return value structure" validation.
+- 🤖 **JS Fallback Analysis** — Automatically analyzes `return` statements and infers types for expressions (e.g., `a + b`, `!a`, `new Date()`) when TS annotations are missing.
+- 🛡️ **Smart Type Matching** — Built-in types (e.g., `Date`, `Array`) match case-insensitively, while custom classes remain strict for a balance of flexibility and precision.
 - 🛡️ **Semantic Snippet Verification** — Write code snippets as validation rules. Matches logic instead of strings.
 - 🧩 **First-class TypeScript Support** — Default TypeScript parsing, generic types, union types, and `any` wildcard matching.
 - ⚡ **Hybrid Parsing Engine** — Seamlessly switches between engines for optimal performance.
