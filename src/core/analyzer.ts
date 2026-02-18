@@ -66,7 +66,7 @@ export class Analyzer {
     return {
       warmup: () => adapter.init(),
       parseFunctionSource: (source, options) =>
-        this._tryParse(adapter, source, options),
+        adapter.parseFunctionSource(source, options),
       getEngineStatus: () => ({
         acorn: adapter.name === 'acorn' && adapter.ready,
         oxc: adapter.name === 'oxc' && adapter.ready,
@@ -84,42 +84,6 @@ export class Analyzer {
         oxc: auto.oxc.ready,
       }),
     }
-  }
-
-  /**
-   * Attempts to parse the source using various wrapping strategies to handle code snippets.
-   */
-  private _tryParse(
-    adapter: ParserAdapter,
-    source: string,
-    options: ParseOptions
-  ): ParseResult {
-    const strategies = [
-      { wrap: (s: string) => s, offset: 0 },
-      { wrap: (s: string) => `(${s})`, offset: 1 },
-      { wrap: (s: string) => `({${s}})`, offset: 2 },
-      { wrap: (s: string) => `(class{${s}})`, offset: 7 },
-    ]
-
-    const errors: Error[] = []
-
-    for (const { wrap, offset } of strategies) {
-      try {
-        const ast = adapter.parse(wrap(source), options)
-        return { ast, offset, engine: adapter.name }
-      } catch (e) {
-        errors.push(e as Error)
-      }
-    }
-
-    const msg = [
-      'Failed to parse function source.',
-      ...errors.map((e, i) => `  Attempt ${i + 1}: ${e.message}`),
-    ].join('\n')
-
-    const err = new Error(msg)
-    ;(err as any).parseErrors = errors
-    throw err
   }
 
   // ============ Public API ============

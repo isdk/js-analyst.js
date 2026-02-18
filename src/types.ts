@@ -222,9 +222,9 @@ export interface TSTypeNode extends ASTNode {
 // =================== Parser Configuration ===================
 
 /** Available parsing engines. */
-export type EngineName = 'acorn' | 'oxc'
+export type EngineName = 'acorn' | 'oxc' | 'auto'
 /** Engine selection strategy: 'auto' (default), or a specific engine name. */
-export type EngineOption = 'auto' | EngineName
+export type EngineOption = EngineName
 
 /**
  * Options for the parsing process.

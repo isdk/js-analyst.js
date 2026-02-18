@@ -13,7 +13,7 @@ Small files are parsed instantly with [acorn](https://github.com/acornjs/acorn) 
 - 🛡️ **Smart Type Matching** — Built-in types (e.g., `Date`, `Array`) match case-insensitively, while custom classes remain strict for a balance of flexibility and precision.
 - 🛡️ **Semantic Snippet Verification** — Write code snippets as validation rules. Matches logic instead of strings.
 - 🧩 **First-class TypeScript Support** — Default TypeScript parsing, generic types, union types, and `any` wildcard matching.
-- ⚡ **Hybrid Parsing Engine** — Seamlessly switches between engines for optimal performance.
+- ⚡ **Hybrid Parsing Engine** — Seamlessly switches between engines for optimal performance. All engines support **Smart Snippet Parsing**, automatically handling code fragments by attempting multiple wrapping strategies.
 - 🎯 **Scope-Aware Analysis** — AST queries and return path analysis are strictly limited to the function's own scope.
 
 ## Install
