@@ -19,8 +19,11 @@ import {
   isMatch,
   matchSequence,
   MatchContext,
+  isLogicMatcher,
 } from '../ast/matcher.js'
 import { AutoAdapter } from '../parser/auto-adapter.js'
+import { jsonSchemaToParamSchema } from './schema-converter.js'
+import { tsTypeToString } from '../utils/ts-type.js'
 
 // =================== Parser Singleton ===================
 
@@ -186,8 +189,29 @@ class Verifier {
       this.check(failures, 'generator', schema.generator, this.fn.isGenerator)
     if (schema.arrow !== undefined)
       this.check(failures, 'arrow', schema.arrow, this.fn.isArrow)
-    if (schema.returnType !== undefined)
-      this.check(failures, 'returnType', schema.returnType, this.fn.returnType)
+    if (schema.returnType !== undefined) {
+      if (
+        typeof schema.returnType === 'object' &&
+        !(schema.returnType instanceof RegExp) &&
+        !isLogicMatcher(schema.returnType)
+      ) {
+        this.verifyReturnTypeDetail(
+          failures,
+          'returnType',
+          this.fn.returnTypeNode,
+          jsonSchemaToParamSchema(schema.returnType)
+        )
+      } else {
+        this.checkType(
+          failures,
+          'returnType',
+          schema.returnType as any,
+          this.fn.returnType,
+          this.fn.returnTypeNode?.type === 'TSTypeLiteral',
+          this.fn.returnTypeNode?.type === 'TSTupleType'
+        )
+      }
+    }
     if (schema.paramCount !== undefined)
       this.check(failures, 'paramCount', schema.paramCount, this.fn.paramCount)
 
@@ -218,8 +242,27 @@ class Verifier {
 
   private verifyParams(
     failures: VerifyFailure[],
-    schemas: ParamSchema[]
+    schemasInput: ParamSchema[] | ParamSchema
   ): void {
+    let schemas: ParamSchema[]
+
+    // Normalize: if a single object is passed...
+    if (schemasInput && !Array.isArray(schemasInput)) {
+      const s = schemasInput as any
+      // If it's a JSON Schema describing the whole parameter list (type: array)
+      if (s.type === 'array' && s.items && Array.isArray(s.items)) {
+        schemas = s.items
+      } else {
+        // Otherwise, treat it as the first parameter's schema (destructuring)
+        schemas = [schemasInput]
+      }
+    } else {
+      schemas = (schemasInput as ParamSchema[]) || []
+    }
+
+    // Further normalize each schema if it's JSON Schema style
+    schemas = schemas.map((s) => jsonSchemaToParamSchema(s))
+
     if (schemas.length !== this.fn.paramCount) {
       failures.push({
         path: 'params.length',
@@ -232,42 +275,411 @@ class Verifier {
       const param = this.fn.param(i)
       if (!param) return
       const prefix = `params[${i}]`
+      this.verifyParamDetail(failures, prefix, param, paramSchema)
+    })
+  }
 
-      // If schema has a _node, it's from a snippet, use structural isMatch
-      if ((paramSchema as any)._node) {
-        if (
-          !isMatch((param as any)._node, (paramSchema as any)._node, this.ctx)
-        ) {
-          failures.push({
-            path: prefix,
-            message: `Parameter signature mismatch`,
-          })
-        }
+  private verifyReturnTypeDetail(
+    failures: VerifyFailure[],
+    path: string,
+    typeNode: ASTNode | null,
+    schema: ParamSchema
+  ): void {
+    if (!typeNode) {
+      // Fallback for JS: check actual return statements in the body
+      const returnNodes = (this.fn.body.returns || [])
+        .map((r) => (r as any).argument)
+        .filter((n) => n !== undefined)
+
+      if (returnNodes.length === 0) {
+        failures.push({
+          path,
+          message: 'Missing return type annotation and no return statements found',
+        })
         return
       }
 
-      this.check(failures, `${prefix}.name`, paramSchema.name, param.name)
-      this.check(failures, `${prefix}.type`, paramSchema.type, param.type)
-      this.check(
-        failures,
-        `${prefix}.hasDefault`,
-        paramSchema.hasDefault,
-        param.hasDefault
-      )
-      this.check(failures, `${prefix}.isRest`, paramSchema.isRest, param.isRest)
-      this.check(
-        failures,
-        `${prefix}.isDestructured`,
-        paramSchema.isDestructured,
-        param.isDestructured
-      )
-      this.check(
-        failures,
-        `${prefix}.pattern`,
-        paramSchema.pattern,
-        param.pattern
-      )
-    })
+      const results = returnNodes.map((node) => {
+        const subFailures: VerifyFailure[] = []
+        this.verifyReturnTypeDetail(subFailures, path, node, schema)
+        return subFailures.length === 0
+      })
+
+      if (!results.every((r: boolean) => r)) {
+        failures.push({
+          path,
+          message: `${path}: some return values do not satisfy the schema`,
+        })
+      }
+      return
+    }
+
+    // Try whole match first
+    const wholeFailures: VerifyFailure[] = []
+    this.verifyReturnTypeBase(wholeFailures, path, typeNode, schema)
+    if (wholeFailures.length === 0) return
+
+    // If failed, and it's a union, try distributive check
+    if (typeNode.type === 'TSUnionType') {
+      const types = (typeNode as any).types || []
+      const results = types.map((t: any) => {
+        const subFailures: VerifyFailure[] = []
+        this.verifyReturnTypeDetail(subFailures, path, t, schema)
+        return subFailures.length === 0
+      })
+
+      if (results.every((r: boolean) => r)) {
+        return // All members match, we are good
+      }
+    }
+
+    // If still failed, report the original whole match failures
+    failures.push(...wholeFailures)
+  }
+
+  private verifyReturnTypeBase(
+    failures: VerifyFailure[],
+    path: string,
+    typeNode: ASTNode,
+    schema: ParamSchema
+  ): void {
+
+    // 1. Handle logical combinators
+    // ... rest of the logic remains same, but we'll update helpers
+    if (schema.$or) {
+      const passed = schema.$or.some((sub) => {
+        const subFailures: VerifyFailure[] = []
+        this.verifyReturnTypeDetail(subFailures, path, typeNode, sub)
+        return subFailures.length === 0
+      })
+      if (!passed)
+        failures.push({
+          path,
+          message: `${path}: none of the $or branches matched`,
+        })
+      return
+    }
+    if (schema.$oneOf) {
+      const matches = schema.$oneOf.filter((sub) => {
+        const subFailures: VerifyFailure[] = []
+        this.verifyReturnTypeDetail(subFailures, path, typeNode, sub)
+        return subFailures.length === 0
+      })
+      if (matches.length !== 1)
+        failures.push({
+          path,
+          message: `${path}: expected exactly one $oneOf branch to match, but found ${matches.length}`,
+        })
+      return
+    }
+    if (schema.$and) {
+      for (const sub of schema.$and)
+        this.verifyReturnTypeDetail(failures, path, typeNode, sub)
+      return
+    }
+    if (schema.$not) {
+      const subFailures: VerifyFailure[] = []
+      this.verifyReturnTypeDetail(subFailures, path, typeNode, schema.$not)
+      if (subFailures.length === 0)
+        failures.push({
+          path,
+          message: `${path}: should NOT match the $not schema`,
+        })
+      return
+    }
+
+    // 2. Base matching
+    let actualType: string | null = null
+    let hasObject = false
+    let hasArray = false
+
+    if (typeNode.type.startsWith('TS')) {
+      actualType = tsTypeToString(typeNode as any)
+      hasObject =
+        typeNode.type === 'TSTypeLiteral' ||
+        (typeNode.type === 'TSUnionType' &&
+          (typeNode as any).types?.some((t: any) => t.type === 'TSTypeLiteral'))
+      hasArray =
+        typeNode.type === 'TSTupleType' ||
+        (typeNode.type === 'TSUnionType' &&
+          (typeNode as any).types?.some((t: any) => t.type === 'TSTupleType'))
+    } else {
+      // Expression node (JS)
+      if (typeNode.type === 'ObjectExpression') {
+        actualType = 'object'
+        hasObject = true
+      } else if (typeNode.type === 'ArrayExpression') {
+        actualType = 'array'
+        hasArray = true
+      } else if (typeNode.type === 'Literal') {
+        const val = (typeNode as any).value
+        actualType = val === null ? 'null' : typeof val
+      } else if (typeNode.type === 'Identifier') {
+        actualType = (typeNode as any).name
+      }
+    }
+
+    this.checkType(
+      failures,
+      `${path}.type`,
+      schema.type,
+      actualType,
+      hasObject,
+      hasArray
+    )
+
+    // Verify properties (Interface or Type literal)
+    if (schema.properties) {
+      const actualProps = this.extractTypeProperties(typeNode)
+      for (const [key, subSchema] of Object.entries(schema.properties)) {
+        const subTypeNode = actualProps[key]
+        if (!subTypeNode) {
+          if (schema.required?.includes(key)) {
+            failures.push({
+              path: `${path}.properties.${key}`,
+              message: `Missing required property in return type: ${key}`,
+            })
+          }
+        } else {
+          this.verifyReturnTypeDetail(
+            failures,
+            `${path}.properties.${key}`,
+            subTypeNode,
+            subSchema
+          )
+        }
+      }
+    }
+
+    // Verify items (Tuple type)
+    if (schema.items) {
+      const actualItems = this.extractTypeItems(typeNode)
+      schema.items.forEach((subSchema, i) => {
+        if (!subSchema) return
+        const subTypeNode = actualItems[i]
+        if (!subTypeNode) {
+          failures.push({
+            path: `${path}.items[${i}]`,
+            message: `Missing expected tuple element at index ${i} in return type`,
+          })
+        } else {
+          this.verifyReturnTypeDetail(
+            failures,
+            `${path}.items[${i}]`,
+            subTypeNode,
+            subSchema
+          )
+        }
+      })
+    }
+  }
+
+  private extractTypeProperties(node: ASTNode): Record<string, ASTNode> {
+    const props: Record<string, ASTNode> = {}
+    if (node.type === 'TSTypeLiteral') {
+      const members = (node as any).members || []
+      for (const m of members) {
+        if (
+          (m.type === 'TSPropertySignature' ||
+            m.type === 'TSMethodSignature') &&
+          m.key?.type === 'Identifier'
+        ) {
+          props[m.key.name] = m.typeAnnotation?.typeAnnotation || m
+        }
+      }
+    } else if (node.type === 'ObjectExpression') {
+      const properties = (node as any).properties || []
+      for (const p of properties) {
+        if (p.type === 'Property' && p.key.type === 'Identifier') {
+          props[p.key.name] = p.value
+        }
+      }
+    }
+    return props
+  }
+
+  private extractTypeItems(node: ASTNode): ASTNode[] {
+    if (node.type === 'TSTupleType') {
+      return (node as any).elementTypes || []
+    } else if (node.type === 'ArrayExpression') {
+      return (node as any).elements || []
+    }
+    return []
+  }
+
+  private verifyParamDetail(
+    failures: VerifyFailure[],
+    path: string,
+    param: any, // IParamInfo
+    schema: ParamSchema
+  ): void {
+    // 1. Handle logical combinators
+    if (schema.$or) {
+      const passed = schema.$or.some((sub) => {
+        const subFailures: VerifyFailure[] = []
+        this.verifyParamDetail(subFailures, path, param, sub)
+        return subFailures.length === 0
+      })
+      if (!passed)
+        failures.push({
+          path,
+          message: `${path}: none of the $or branches matched`,
+        })
+      return
+    }
+    if (schema.$oneOf) {
+      const matches = schema.$oneOf.filter((sub) => {
+        const subFailures: VerifyFailure[] = []
+        this.verifyParamDetail(subFailures, path, param, sub)
+        return subFailures.length === 0
+      })
+      if (matches.length !== 1)
+        failures.push({
+          path,
+          message: `${path}: expected exactly one $oneOf branch to match, but found ${matches.length}`,
+        })
+      return
+    }
+    if (schema.$and) {
+      for (const sub of schema.$and)
+        this.verifyParamDetail(failures, path, param, sub)
+      return
+    }
+    if (schema.$not) {
+      const subFailures: VerifyFailure[] = []
+      this.verifyParamDetail(subFailures, path, param, schema.$not)
+      if (subFailures.length === 0)
+        failures.push({
+          path,
+          message: `${path}: should NOT match the $not schema`,
+        })
+      return
+    }
+
+    // 2. Base structural matching
+    // If schema has a _node, it's from a snippet, use structural isMatch
+    if ((schema as any)._node) {
+      if (!isMatch((param as any)._node, (schema as any)._node, this.ctx)) {
+        failures.push({
+          path,
+          message: `Parameter signature mismatch`,
+        })
+      }
+      return
+    }
+
+    this.check(failures, `${path}.name`, schema.name, param.name)
+
+    this.checkType(
+      failures,
+      `${path}.type`,
+      schema.type,
+      param.type,
+      param.pattern === 'object',
+      param.pattern === 'array'
+    )
+
+    this.check(
+      failures,
+      `${path}.hasDefault`,
+      schema.hasDefault,
+      param.hasDefault
+    )
+    this.check(failures, `${path}.isRest`, schema.isRest, param.isRest)
+    this.check(
+      failures,
+      `${path}.isDestructured`,
+      schema.isDestructured,
+      param.isDestructured
+    )
+    this.check(failures, `${path}.pattern`, schema.pattern, param.pattern)
+
+    // Verify properties (Object destructuring)
+    if (schema.properties) {
+      if (param.pattern !== 'object') {
+        failures.push({
+          path: `${path}.properties`,
+          message: `Expected object destructuring, but got ${param.pattern || 'none'}`,
+        })
+      } else {
+        // Strict check: no extra properties
+        if (this.ctx.strict) {
+          const schemaKeys = Object.keys(schema.properties)
+          const actualKeys = Object.keys(param.properties || {})
+          for (const key of actualKeys) {
+            if (!schemaKeys.includes(key)) {
+              failures.push({
+                path: `${path}.properties`,
+                message: `Unexpected property "${key}" in strict mode`,
+              })
+            }
+          }
+        }
+
+        for (const [key, subSchema] of Object.entries(schema.properties)) {
+          const subParam = param.properties?.[key]
+          if (!subParam) {
+            // Check if it's required
+            if (schema.required?.includes(key)) {
+              failures.push({
+                path: `${path}.properties.${key}`,
+                message: `Missing required property: ${key}`,
+              })
+            }
+          } else {
+            this.verifyParamDetail(
+              failures,
+              `${path}.properties.${key}`,
+              subParam,
+              subSchema
+            )
+          }
+        }
+      }
+    }
+
+    // Verify required (additional check for missing fields in required list not in properties)
+    if (schema.required && param.pattern === 'object') {
+      for (const key of schema.required) {
+        if (!param.properties?.[key]) {
+          if (!schema.properties?.[key]) {
+            // Only report if not already reported by properties loop
+            failures.push({
+              path: `${path}.required.${key}`,
+              message: `Missing required property: ${key}`,
+            })
+          }
+        }
+      }
+    }
+
+    // Verify items (Array destructuring)
+    if (schema.items) {
+      if (param.pattern !== 'array') {
+        failures.push({
+          path: `${path}.items`,
+          message: `Expected array destructuring, but got ${param.pattern || 'none'}`,
+        })
+      } else {
+        schema.items.forEach((subSchema, i) => {
+          if (!subSchema) return
+          const subParam = param.items?.[i]
+          if (!subParam) {
+            failures.push({
+              path: `${path}.items[${i}]`,
+              message: `Missing expected array element at index ${i}`,
+            })
+          } else {
+            this.verifyParamDetail(
+              failures,
+              `${path}.items[${i}]`,
+              subParam,
+              subSchema
+            )
+          }
+        })
+      }
+    }
   }
 
   private verifyBody(failures: VerifyFailure[], schema: BodySchema): void {
@@ -399,6 +811,40 @@ class Verifier {
         failures.push({ path: `${path}.$none`, message: 'Some matched $none' })
       }
     }
+  }
+
+  private checkType(
+    failures: VerifyFailure[],
+    path: string,
+    matcher: Matcher<string | null> | undefined,
+    actual: string | null,
+    isObject?: boolean,
+    isArray?: boolean
+  ): void {
+    if (matcher === undefined) return
+
+    const deepMatch = (v: any, p: any) => isMatch(v, p, this.ctx)
+
+    // 1. Try direct match using evaluateMatcher
+    if (evaluateMatcher(actual, matcher, deepMatch)) {
+      return
+    }
+
+    // 2. Try semantic match for JSON Schema keywords (object/array)
+    if (isObject && evaluateMatcher('object', matcher, deepMatch)) {
+      return
+    }
+    if (isArray && evaluateMatcher('array', matcher, deepMatch)) {
+      return
+    }
+
+    // 3. If everything fails, report failure
+    failures.push({
+      path,
+      expected: matcher,
+      actual,
+      message: `${path}: failed`,
+    })
   }
 
   private check<T>(

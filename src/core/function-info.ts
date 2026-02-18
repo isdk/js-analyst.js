@@ -248,9 +248,17 @@ export class FunctionInfo implements IFunctionInfo {
    * Returns null if no type annotation is present.
    */
   get returnType(): string | null {
+    const rt = this.returnTypeNode
+    if (!rt) return null
+    return tsTypeToString(rt as any, this._source, this._offset)
+  }
+
+  /**
+   * The AST node representing the return type annotation.
+   */
+  get returnTypeNode(): ASTNode | null {
     const rt = this._node.returnType as TSTypeAnnotationWrapper | undefined
-    if (!rt?.typeAnnotation) return null
-    return tsTypeToString(rt.typeAnnotation, this._source, this._offset)
+    return rt?.typeAnnotation ?? null
   }
 
   // ========== Body ==========

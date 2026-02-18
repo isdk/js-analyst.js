@@ -230,7 +230,7 @@ export type EngineOption = 'auto' | EngineName
  * Options for the parsing process.
  */
 export interface ParseOptions {
-  /** Whether to parse as TypeScript. If omitted, detection is automatic. */
+  /** Whether to parse as TypeScript. Defaults to true. */
   ts?: boolean
   /** Force the use of a specific parsing engine. */
   engine?: EngineName
@@ -287,6 +287,8 @@ export interface LogicMatcher<T> {
   $or?: Matcher<T>[]
   /** Matches if all of the provided matchers match. */
   $and?: Matcher<T>[]
+  /** Matches if exactly one of the provided matchers match. */
+  $oneOf?: Matcher<T>[]
   /** Matches if the provided matcher does NOT match. */
   $not?: Matcher<T>
 }
@@ -335,6 +337,29 @@ export interface ParamSchema {
   isDestructured?: boolean
   /** The destructuring pattern type. */
   pattern?: 'object' | 'array' | null
+  /**
+   * For object destructuring: schemas for individual properties.
+   * Maps the property key (not the local variable name) to its schema.
+   */
+  properties?: Record<string, ParamSchema>
+  /** For object destructuring: list of required property keys. */
+  required?: string[]
+  /**
+   * For array destructuring: schemas for individual elements in order.
+   */
+  items?: (ParamSchema | null)[]
+
+  /** Logical combinators (JSON Schema style) */
+  anyOf?: ParamSchema[]
+  oneOf?: ParamSchema[]
+  allOf?: ParamSchema[]
+  not?: ParamSchema
+
+  /** Logical combinators (Internal style) */
+  $or?: ParamSchema[]
+  $oneOf?: ParamSchema[]
+  $and?: ParamSchema[]
+  $not?: ParamSchema
 }
 
 /**
@@ -379,10 +404,14 @@ export type VerifySchema =
       arrow?: boolean
       /** Matcher for the number of parameters. */
       paramCount?: Matcher<number>
-      /** Verification schemas for individual parameters. */
-      params?: ParamSchema[]
-      /** Matcher for the return type (string representation). */
-      returnType?: Matcher<string | null>
+      /**
+       * Verification schemas for individual parameters.
+       * Can be an array of schemas (positional), or a single object (JSON Schema
+       * representing the first parameter's destructuring).
+       */
+      params?: ParamSchema[] | ParamSchema
+      /** Matcher for the return type (string representation) or a structured schema. */
+      returnType?: Matcher<string | null> | ParamSchema
       /** Whether to enable strict matching (e.g., matching variable declaration kind). */
       strict?: boolean
       /** Custom validation for return statements (shortcut for body.returns). */
@@ -513,6 +542,8 @@ export interface IFunctionInfo {
   readonly paramCount: number
   /** The string representation of the TypeScript return type. */
   readonly returnType: string | null
+  /** The AST node representing the return type annotation. */
+  readonly returnTypeNode: ASTNode | null
   /** Metadata about the function body. */
   readonly body: IBodyInfo
   /** Gets parameter info by its index. */
@@ -562,6 +593,8 @@ export interface ParamInfoJSON {
   isDestructured: boolean
   pattern: 'object' | 'array' | null
   text: string | null
+  properties?: Record<string, ParamInfoJSON>
+  items?: (ParamInfoJSON | null)[]
 }
 
 /**

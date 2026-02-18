@@ -100,12 +100,19 @@ export function tsTypeToString(
   // Literal Types: 'hello' | 42 | true
   if (tsNode.type === 'TSLiteralType') {
     const lit = tsNode.literal
-    return String(lit?.value ?? lit?.raw ?? 'unknown')
+    if (lit?.raw) return lit.raw
+    if (typeof lit?.value === 'string') return `"${lit.value}"`
+    return String(lit?.value ?? 'unknown')
   }
 
   // Optional Types: string | undefined
   if (tsNode.type === 'TSOptionalType') {
     return tsTypeToString((tsNode as any).typeAnnotation, source, offset) + '?'
+  }
+
+  // Rest Types: ...string[] -> string[]
+  if (tsNode.type === 'TSRestType') {
+    return tsTypeToString((tsNode as any).typeAnnotation, source, offset)
   }
 
   // Fallback: Slice from source if available

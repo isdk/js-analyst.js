@@ -288,6 +288,12 @@ export function evaluateMatcher<T>(
       return m.$or.some((sub) => evaluateMatcher(value, sub, deepMatch))
     if (m.$and)
       return m.$and.every((sub) => evaluateMatcher(value, sub, deepMatch))
+    if (m.$oneOf) {
+      const matches = m.$oneOf.filter((sub) =>
+        evaluateMatcher(value, sub, deepMatch)
+      )
+      return matches.length === 1
+    }
     if (m.$not) return !evaluateMatcher(value, m.$not, deepMatch)
     return true
   }
@@ -296,8 +302,10 @@ export function evaluateMatcher<T>(
   return value === matcher
 }
 
-function isLogicMatcher(m: any): m is LogicMatcher<any> {
+export function isLogicMatcher(m: any): m is LogicMatcher<any> {
   return (
-    m && typeof m === 'object' && ('$or' in m || '$and' in m || '$not' in m)
+    m &&
+    typeof m === 'object' &&
+    ('$or' in m || '$and' in m || '$oneOf' in m || '$not' in m)
   )
 }

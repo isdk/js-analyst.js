@@ -7,7 +7,7 @@
 
 ## 特性
 
-- 🔍 **深度函数 analysis** — 完整提取名称、参数（解构/默认值）、函数体、返回路径及 TS 类型。
+- 🔍 **深度函数分析** — 完整提取名称、参数（解构/默认值）、函数体、返回路径及 TS 类型。
 - 🛡️ **语义化 Snippet 验证** — 支持直接编写代码片段作为模板进行匹配，自动处理语法等价性。
 - 🧩 **TypeScript 完美支持** — 自动检测 TS，支持泛型、联合类型匹配及 `any` 模糊类型通配。
 - ⚡ **混合解析引擎** — 智能切换引擎，兼顾启动速度与超大文件处理性能。
@@ -65,6 +65,26 @@ const result = verify(code, pattern);
 console.log(result.passed); // ✅ true
 ```
 
+### 3. JSON Schema 校验
+
+你可以直接使用标准的 JSON Schema 来校验函数的参数结构和返回值。
+
+```typescript
+import { verify } from '@isdk/js-analyst';
+
+const code = 'function getWeather({ location, unit = "c" }: { location: string, unit?: string }) {}';
+
+const result = verify(code, {
+  params: {
+    type: 'object',
+    properties: {
+      location: { type: 'string', required: true },
+      unit: { type: 'string' }
+    }
+  }
+});
+```
+
 ---
 
 ## API 深度参考
@@ -94,6 +114,7 @@ console.log(result.passed); // ✅ true
 | `paramCount` | `number` | 参数数量 |
 | `params` | `ParamInfo[]` | 详细的参数元数据列表 |
 | `returnType` | `string \| null` | TypeScript 返回类型注解的字符串表示 |
+| `returnTypeNode` | `ASTNode \| null` | 返回类型注解的 AST 节点（用于结构化校验） |
 | `body` | `BodyInfo` | 函数体分析工具 |
 | `engine` | `string` | 解析该函数所使用的引擎 (`acorn` \| `oxc`) |
 
@@ -115,6 +136,8 @@ console.log(result.passed); // ✅ true
 | `isRest` | `boolean` | 是否为剩余参数 (`...args`) |
 | `isDestructured` | `boolean` | 是否使用了对象/数组解构 |
 | `pattern` | `'object' \| 'array' \| null` | 解构的类型 |
+| `properties` | `Record<string, ParamInfo>` | 对象解构中的内部属性元数据（递归） |
+| `items` | `ParamInfo[]` | 数组解构中的元素元数据（递归） |
 | `text` | `string` | 参数的原始源码文本 |
 
 ### `BodyInfo` 对象
@@ -200,6 +223,37 @@ analyzer.verify(code, {
 analyzer.verify(code, {
   strict: true,
   body: 'return a+b' // 在严格模式下，将不会匹配 'return (a+b)'
+});
+```
+
+### 6. JSON Schema 深度支持
+
+校验引擎支持递归的结构化匹配，并兼容 JSON Schema 核心关键字：
+
+- **逻辑组合**: 支持 `anyOf`, `oneOf`, `allOf`, `not`。
+- **递归校验**: 自动校验对象解构中的 `properties` 和数组解构中的 `items`。
+- **JS 自动回退**: 当缺少 TS 类型注解时，会自动分析函数体中 `return` 语句返回的字面量结构。
+
+**简写语法示例:**
+
+```typescript
+verify(code, {
+  params: [
+    {
+      name: 'options',
+      properties: {
+        id: { type: 'number', required: true }, // 支持在属性内直接写 required: true
+        mode: { enum: ['fast', 'slow'] }        // 自动映射为 $or 逻辑匹配
+      }
+    },
+    { type: '...string[]' }                     // 使用 '...' 简写表示剩余参数
+  ],
+  returnType: {
+    oneOf: [
+      { type: 'string' },
+      { properties: { success: { type: 'boolean' } } }
+    ]
+  }
 });
 ```
 

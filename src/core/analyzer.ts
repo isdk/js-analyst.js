@@ -16,7 +16,6 @@ import { OxcAdapter } from '../parser/oxc-adapter.js'
 import type { ParserAdapter } from '../parser/adapter.js'
 import { FunctionInfo } from './function-info.js'
 import { findAll, isFunctionNode } from '../ast/traverse.js'
-import { detectTypeScript } from '../utils/source.js'
 
 /**
  * Internal bridge to unify different adapter interfaces.
@@ -144,7 +143,7 @@ export class Analyzer {
   parse(input: string | Function, options: ParseOptions = {}): FunctionInfo {
     const source =
       typeof input === 'function' ? input.toString() : String(input)
-    const isTS = options.ts ?? detectTypeScript(source)
+    const isTS = options.ts ?? true
 
     const { ast, offset, engine } = this._bridge.parseFunctionSource(source, {
       ...options,
@@ -186,7 +185,7 @@ export class Analyzer {
    * ```
    */
   parseAll(source: string, options: ParseOptions = {}): FunctionInfo[] {
-    const isTS = options.ts ?? detectTypeScript(source)
+    const isTS = options.ts ?? true
 
     const { ast, offset, engine } = this._bridge.parseFunctionSource(source, {
       ...options,

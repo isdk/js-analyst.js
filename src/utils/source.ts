@@ -87,8 +87,8 @@ export function detectTypeScript(source: string): boolean {
   if (!source) return false
 
   const tsPatterns: RegExp[] = [
-    /\)\s*:\s*\w+/, // Return type ): number
-    /\w\s*:\s*[\w<|[].+/, // General type annotation : Type, : Promise<T>, : string | number
+    /\)\s*:\s*[\w<|[].+/, // Return type ): number, ): [T], ): { a: T }
+    /\w\s*:\s*[\w<|[].+/, // General type annotation : Type, : Promise<T>, : string | number, : [number]
     /\binterface\s+\w+/, // interface Foo
     /\btype\s+\w+\s*=/, // type Foo =
     /\benum\s+\w+/, // enum Foo

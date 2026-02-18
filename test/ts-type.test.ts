@@ -84,7 +84,7 @@ describe('tsTypeToString', () => {
   it('handles TSLiteralType', () => {
     expect(tsTypeToString(make('TSLiteralType', {
       literal: { value: 'hello' }
-    }))).toBe('hello');
+    }))).toBe('"hello"');
 
     expect(tsTypeToString(make('TSLiteralType', {
       literal: { raw: '42' }
