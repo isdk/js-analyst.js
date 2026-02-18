@@ -2,24 +2,64 @@
 //  src/parser/adapter.ts — Parser Adapter Abstract Base
 // ============================================================
 
-import type { ASTNode, EngineName, ParseOptions, ParseResult } from '../types.js'
+import type { ASTNode, EngineName, FunctionKind, ParseOptions, ParseResult } from '../types.js'
 
 /**
  * Wrapping strategy for parsing various function forms.
  */
 export interface WrapStrategy {
+  /** The name of the strategy (e.g., 'Direct', 'Method'). */
+  name: string
+  /** The wrapping function that transforms the source. */
   wrap: (s: string) => string
+  /** The character offset introduced by the wrapping. */
   offset: number
+  /** The functional kind associated with this strategy, used for filtering. */
+  kind?: FunctionKind
 }
 
 export const WRAP_STRATEGIES: WrapStrategy[] = [
-  { wrap: (s) => s, offset: 0 }, // Direct parse
-  { wrap: (s) => `(${s})`, offset: 1 }, // Wrapped in parens (expression)
-  { wrap: (s) => `({${s}})`, offset: 2 }, // Wrapped in object (method shorthand)
-  { wrap: (s) => `(class{${s}})`, offset: 7 }, // Wrapped in class (class method)
-  { wrap: (s) => `(function(){${s}})`, offset: 12 }, // Wrapped in function expression
-  { wrap: (s) => `(async function*(){${s}})`, offset: 19 }, // Wrapped in async generator expression
+  { name: 'Direct', wrap: (s) => s, offset: 0 }, // Direct parse
+  { name: 'Expression', wrap: (s) => `(${s})`, offset: 1 }, // Wrapped in parens (expression)
+  { name: 'Method', wrap: (s) => `({${s}})`, offset: 2, kind: 'method' }, // Wrapped in object (method shorthand)
+  { name: 'ClassMethod', wrap: (s) => `(class{${s}})`, offset: 7, kind: 'method' }, // Wrapped in class (class method)
+  { name: 'FunctionExpression', wrap: (s) => `(function(){${s}})`, offset: 12 }, // Wrapped in function expression
+  { name: 'AsyncGeneratorExpression', wrap: (s) => `(async function*(){${s}})`, offset: 19 }, // Wrapped in async generator expression
 ]
+
+/**
+ * Detailed error information for a single parsing attempt.
+ */
+export interface ParseErrorDetail {
+  strategy: string
+  message: string
+  error: Error
+  /** The 0-based character offset in the ORIGINAL source. */
+  pos: number
+  /** The length of the error segment. */
+  length: number
+}
+
+/**
+ * Custom error thrown when function parsing fails across all strategies.
+ */
+export class JSAnalystParseError extends Error {
+  public readonly pos: number
+  public readonly length: number
+  public readonly strategy: string
+
+  constructor(
+    message: string,
+    public readonly bestDetail: ParseErrorDetail,
+    public readonly parseErrors: ParseErrorDetail[],
+  ) {
+    super(message)
+    this.name = 'JSAnalystParseError'
+    this.pos = bestDetail.pos
+    this.length = bestDetail.length
+    this.strategy = bestDetail.strategy
+  }
+}
 
 /**
  * Base class for parser adapters.
@@ -72,12 +112,24 @@ export abstract class ParserAdapter {
    * @param source - The function source or fragment.
    * @param options - Parsing configuration.
    * @returns The parsing result including the AST and applied offset.
-   * @throws {Error} If all parsing attempts fail.
+   * @throws {JSAnalystParseError} If all parsing attempts fail.
    */
   parseFunctionSource(source: string, options: ParseOptions = {}): ParseResult {
-    const errors: Error[] = []
+    const details: ParseErrorDetail[] = []
+    const requestedKinds = options.kind
+      ? Array.isArray(options.kind)
+        ? options.kind
+        : [options.kind]
+      : []
 
-    for (const strategy of WRAP_STRATEGIES) {
+    // Sort strategies: prioritize those matching the requested kind
+    const strategies = [...WRAP_STRATEGIES].sort((a, b) => {
+      const aMatches = a.kind && requestedKinds.includes(a.kind) ? 1 : 0
+      const bMatches = b.kind && requestedKinds.includes(b.kind) ? 1 : 0
+      return bMatches - aMatches
+    })
+
+    for (const strategy of strategies) {
       try {
         const wrapped = strategy.wrap(source)
         const ast = this.parse(wrapped, options)
@@ -87,17 +139,47 @@ export abstract class ParserAdapter {
           engine: this.name,
         }
       } catch (err) {
-        errors.push(err as Error)
+        const error = err as any
+        const wrappedPos = typeof error.pos === 'number' ? error.pos : 0
+        const pos = Math.max(0, wrappedPos - strategy.offset)
+        
+        let length = 0
+        if (error.loc && typeof error.loc.end === 'number' && typeof error.loc.start === 'number') {
+          length = error.loc.end - error.loc.start
+        } else if (typeof error.raisedAt === 'number') {
+          length = Math.max(1, error.raisedAt - wrappedPos)
+        } else {
+          // Fallback to 1 if we can't determine length but have a pos
+          length = 1
+        }
+
+        details.push({
+          strategy: strategy.name,
+          message: error.message,
+          error: error as Error,
+          pos,
+          length,
+        })
       }
     }
 
-    const msg = [
-      'Failed to parse function source.',
-      ...errors.map((e, i) => `  Attempt ${i + 1}: ${e.message}`),
-    ].join('\n')
+    // Heuristic: pick the "best" error to show in the main message.
+    // 1. If there's an error from a strategy matching requested kind, pick it.
+    // 2. Otherwise, prefer the error from 'Direct' or 'Expression' as they are least 'distorted'.
+    let bestDetail = details.find((d) => {
+      const s = WRAP_STRATEGIES.find((st) => st.name === d.strategy)
+      return s?.kind && requestedKinds.includes(s.kind)
+    })
 
-    const error = new Error(msg)
-    ;(error as any).parseErrors = errors
-    throw error
+    if (!bestDetail) {
+      bestDetail =
+        details.find((d) => d.strategy === 'Direct') ||
+        details.find((d) => d.strategy === 'Expression') ||
+        details[0]
+    }
+
+    const msg = `Failed to parse function source using engine '${this.name}'. Best guess (${bestDetail.strategy}): ${bestDetail.message}`
+
+    throw new JSAnalystParseError(msg, bestDetail, details)
   }
 }
