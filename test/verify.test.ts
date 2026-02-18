@@ -242,7 +242,7 @@ describe('Verify - failure summary', () => {
     const r = analyzer.verify('function foo(a) { return a }', {
       name: 'bar',
       paramCount: 2,
-      body: { 
+      body: {
         returns: (ret) => ret.isLiteral(42),
         has: 'AwaitExpression',
         custom: () => false,
@@ -266,8 +266,8 @@ describe('Verify - failure summary', () => {
   });
 
   it('fails with custom predicate throwing error', () => {
-    const r = analyzer.verify('function foo() {}', { 
-      name: () => { throw new Error('fail'); } 
+    const r = analyzer.verify('function foo() {}', {
+      name: () => { throw new Error('fail'); }
     });
     expect(r.passed).toBe(false);
   });

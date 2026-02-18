@@ -14,17 +14,61 @@ export interface WrapStrategy {
   wrap: (s: string) => string
   /** The character offset introduced by the wrapping. */
   offset: number
-  /** The functional kind associated with this strategy, used for filtering. */
-  kind?: FunctionKind
+  /** The functional kind(s) associated with this strategy, used for filtering. */
+  kind?: FunctionKind | FunctionKind[]
+  /** Whether this strategy is for async functions. */
+  async?: boolean
+  /** Whether this strategy is for generator functions. */
+  generator?: boolean
 }
 
 export const WRAP_STRATEGIES: WrapStrategy[] = [
-  { name: 'Direct', wrap: (s) => s, offset: 0 }, // Direct parse
-  { name: 'Expression', wrap: (s) => `(${s})`, offset: 1 }, // Wrapped in parens (expression)
-  { name: 'Method', wrap: (s) => `({${s}})`, offset: 2, kind: 'method' }, // Wrapped in object (method shorthand)
-  { name: 'ClassMethod', wrap: (s) => `(class{${s}})`, offset: 7, kind: 'method' }, // Wrapped in class (class method)
-  { name: 'FunctionExpression', wrap: (s) => `(function(){${s}})`, offset: 12 }, // Wrapped in function expression
-  { name: 'AsyncGeneratorExpression', wrap: (s) => `(async function*(){${s}})`, offset: 19 }, // Wrapped in async generator expression
+  { name: 'Direct', wrap: (s) => s, offset: 0 }, // Generic: try for everything
+  { name: 'Expression', wrap: (s) => `(${s})`, offset: 1 }, // Generic: try for everything
+  {
+    name: 'Method',
+    wrap: (s) => `({${s}})`,
+    offset: 2,
+    kind: ['method', 'getter', 'setter', 'constructor'],
+  },
+  {
+    name: 'ClassMethod',
+    wrap: (s) => `(class{${s}})`,
+    offset: 7,
+    kind: ['method', 'getter', 'setter', 'constructor'],
+  },
+  {
+    name: 'FunctionExpression',
+    wrap: (s) => `(function(){${s}})`,
+    offset: 12,
+    kind: 'function',
+    async: false,
+    generator: false,
+  },
+  {
+    name: 'AsyncFunctionExpression',
+    wrap: (s) => `(async function(){${s}})`,
+    offset: 18,
+    kind: 'function',
+    async: true,
+    generator: false,
+  },
+  {
+    name: 'GeneratorExpression',
+    wrap: (s) => `(function*(){${s}})`,
+    offset: 13,
+    kind: 'function',
+    async: false,
+    generator: true,
+  },
+  {
+    name: 'AsyncGeneratorExpression',
+    wrap: (s) => `(async function*(){${s}})`,
+    offset: 19,
+    kind: 'function',
+    async: true,
+    generator: true,
+  },
 ]
 
 /**
@@ -116,18 +160,87 @@ export abstract class ParserAdapter {
    */
   parseFunctionSource(source: string, options: ParseOptions = {}): ParseResult {
     const details: ParseErrorDetail[] = []
-    const requestedKinds = options.kind
-      ? Array.isArray(options.kind)
-        ? options.kind
-        : [options.kind]
+    const requestedKinds = (options.strategyKind || options.kind)
+      ? Array.isArray(options.strategyKind || options.kind)
+        ? (options.strategyKind || options.kind) as FunctionKind[]
+        : [options.strategyKind || options.kind] as FunctionKind[]
       : []
 
-    // Sort strategies: prioritize those matching the requested kind
-    const strategies = [...WRAP_STRATEGIES].sort((a, b) => {
-      const aMatches = a.kind && requestedKinds.includes(a.kind) ? 1 : 0
-      const bMatches = b.kind && requestedKinds.includes(b.kind) ? 1 : 0
-      return bMatches - aMatches
-    })
+    // 1. Filter and sort strategies based on requested kinds and hints
+    let strategies = [...WRAP_STRATEGIES]
+    if (requestedKinds.length > 0 || options.strategyAsync !== undefined || options.strategyGenerator !== undefined) {
+      // Filter: Keep strategies that match requested kind OR are generic (no kind)
+      // AND match async/generator hints if provided
+      strategies = strategies.filter((s) => {
+        // Filter by kind
+        if (requestedKinds.length > 0 && s.kind) {
+          const sKinds = Array.isArray(s.kind) ? s.kind : [s.kind]
+          if (!sKinds.some((k) => requestedKinds.includes(k))) return false
+        }
+
+        // Filter by async
+        if (s.async !== undefined) {
+          const targetAsync = options.strategyAsync ?? false
+          if (s.async !== targetAsync) return false
+        }
+
+        // Filter by generator
+        if (s.generator !== undefined) {
+          const targetGenerator = options.strategyGenerator ?? false
+          if (s.generator !== targetGenerator) return false
+        }
+
+        return true
+      })
+
+      // Sort: Prioritize strategies matching hints
+      const isMethodLike = requestedKinds.some((k) =>
+        ['method', 'getter', 'setter', 'constructor'].includes(k)
+      )
+
+      strategies.sort((a, b) => {
+        // Direct strategy always comes first
+        if (a.name === 'Direct') return -1
+        if (b.name === 'Direct') return 1
+
+        // Kind match score
+        const aKindMatch =
+          a.kind &&
+          (Array.isArray(a.kind)
+            ? a.kind.some((k) => requestedKinds.includes(k))
+            : requestedKinds.includes(a.kind as FunctionKind))
+        const bKindMatch =
+          b.kind &&
+          (Array.isArray(b.kind)
+            ? b.kind.some((k) => requestedKinds.includes(k))
+            : requestedKinds.includes(b.kind as FunctionKind))
+
+        // Async/Generator match score
+        const aHintMatch = 
+          (options.strategyAsync !== undefined && a.async === options.strategyAsync) ||
+          (options.strategyGenerator !== undefined && a.generator === options.strategyGenerator)
+        const bHintMatch = 
+          (options.strategyAsync !== undefined && b.async === options.strategyAsync) ||
+          (options.strategyGenerator !== undefined && b.generator === options.strategyGenerator)
+
+        // Prioritize by kind match first if it's method-like
+        if (isMethodLike) {
+          if (aKindMatch && !bKindMatch) return -1
+          if (!aKindMatch && bKindMatch) return 1
+        } else {
+          // For standard functions, generic strategies (like Expression) are often better 
+          // unless a specific hint is given. But Direct is already handled above.
+          if (aKindMatch && !bKindMatch) return 1
+          if (!aKindMatch && bKindMatch) return -1
+        }
+
+        // Then prioritize by hints
+        if (aHintMatch && !bHintMatch) return -1
+        if (!aHintMatch && bHintMatch) return 1
+
+        return 0
+      })
+    }
 
     for (const strategy of strategies) {
       try {
@@ -142,9 +255,13 @@ export abstract class ParserAdapter {
         const error = err as any
         const wrappedPos = typeof error.pos === 'number' ? error.pos : 0
         const pos = Math.max(0, wrappedPos - strategy.offset)
-        
+
         let length = 0
-        if (error.loc && typeof error.loc.end === 'number' && typeof error.loc.start === 'number') {
+        if (
+          error.loc &&
+          typeof error.loc.end === 'number' &&
+          typeof error.loc.start === 'number'
+        ) {
           length = error.loc.end - error.loc.start
         } else if (typeof error.raisedAt === 'number') {
           length = Math.max(1, error.raisedAt - wrappedPos)
@@ -164,11 +281,20 @@ export abstract class ParserAdapter {
     }
 
     // Heuristic: pick the "best" error to show in the main message.
-    // 1. If there's an error from a strategy matching requested kind, pick it.
+    // 1. If there's an error from a strategy matching requested kind or hints, pick it.
     // 2. Otherwise, prefer the error from 'Direct' or 'Expression' as they are least 'distorted'.
     let bestDetail = details.find((d) => {
       const s = WRAP_STRATEGIES.find((st) => st.name === d.strategy)
-      return s?.kind && requestedKinds.includes(s.kind)
+      if (!s) return false
+      
+      const kindMatch = s.kind && (Array.isArray(s.kind) 
+        ? s.kind.some(k => requestedKinds.includes(k))
+        : requestedKinds.includes(s.kind as FunctionKind))
+      
+      const asyncMatch = options.strategyAsync !== undefined && s.async === options.strategyAsync
+      const genMatch = options.strategyGenerator !== undefined && s.generator === options.strategyGenerator
+      
+      return kindMatch || asyncMatch || genMatch
     })
 
     if (!bestDetail) {

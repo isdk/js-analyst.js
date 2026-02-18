@@ -202,7 +202,24 @@ export class Analyzer {
     schema: VerifySchema,
     parseOptions: ParseOptions = {}
   ): VerifyResult {
-    return this.parse(input, parseOptions).verify(schema)
+    // Optimization: if schema contains kind or syntax, use them as hints for the parser strategy
+    const hints: ParseOptions = {}
+    if (typeof schema === 'object' && schema !== null) {
+      if (schema.kind && (typeof schema.kind === 'string' || Array.isArray(schema.kind))) {
+        hints.strategyKind = schema.kind as any
+      }
+      if (schema.syntax && (typeof schema.syntax === 'string' || Array.isArray(schema.syntax))) {
+        hints.strategySyntax = schema.syntax as any
+      }
+      if (typeof (schema as any).async === 'boolean') {
+        hints.strategyAsync = (schema as any).async
+      }
+      if (typeof (schema as any).generator === 'boolean') {
+        hints.strategyGenerator = (schema as any).generator
+      }
+    }
+
+    return this.parse(input, { ...hints, ...parseOptions }).verify(schema)
   }
 
   /**

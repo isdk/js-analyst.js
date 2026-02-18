@@ -242,6 +242,14 @@ export interface ParseOptions {
   kind?: FunctionKind | FunctionKind[]
   /** Filter results to include only specific function syntaxes. */
   syntax?: FunctionSyntax | FunctionSyntax[]
+  /** Hint for the parser strategy, without strict filtering of results. @internal */
+  strategyKind?: FunctionKind | FunctionKind[]
+  /** Hint for the parser strategy, without strict filtering of results. @internal */
+  strategySyntax?: FunctionSyntax | FunctionSyntax[]
+  /** Hint for the parser strategy whether it is async. @internal */
+  strategyAsync?: boolean
+  /** Hint for the parser strategy whether it is a generator. @internal */
+  strategyGenerator?: boolean
 }
 
 /**
